@@ -22,7 +22,7 @@ export class User {
   roles!: string[];
 
   @Column("text")
-  comment!: string;
+  intro_msg!: string;
 
   @OneToMany(() => Event, (event) => event.host)
   hostedEvents!: Event[];
