@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2021", // Support modern JS features
+    "module": "ESNext", // Needed for ES modules syntax
+    "moduleResolution": "Node",
+    "outDir": "./dist", // Target for compiled files
+    "rootDir": "./src", // Where source files live
+    "strict": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true, // Required for TypeORM decorators, e.g. @Entity
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@config/*": ["config/*"],
+      "@app/*": ["app/*"],
+      "@modules/*": ["modules/*"],
+      "@utils/*": ["utils/*"]
+    } // baseUrl and paths: Simplify imports using aliases (e.g., @utils/ instead of relative paths like ../../utils).
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
