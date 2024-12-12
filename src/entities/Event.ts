@@ -3,13 +3,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  OneToMany,
   JoinColumn,
 } from "typeorm";
-import { User } from "./User";
-import { Book } from "./Book";
-import { RSVP } from "./RSVP";
-import { EventComment } from "./EventComment";
+import { User } from "./User.js";
+import { Book } from "./Book.js";
 
 @Entity()
 export class Event {
@@ -28,20 +25,21 @@ export class Event {
   @Column({ length: 255 })
   location!: string;
 
-  @ManyToOne(() => Book, (book) => book.events)
+  @Column("timestamp", { default: () => "CURRENT_TIMESTAMP" })
+  created_at!: Date;
+
+  @Column("timestamp", { default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  updated_at!: Date;
+
+  @ManyToOne(() => Book)
   @JoinColumn({ name: "book_id" })
   book!: Book;
 
-  @ManyToOne(() => User, (user) => user.hostedEvents, { nullable: true })
+  @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: "host_id" })
   host!: User;
 
   @Column("int")
   max_attendees!: number;
 
-  @OneToMany(() => RSVP, (rsvp) => rsvp.event)
-  rsvps!: RSVP[];
-
-  @OneToMany(() => EventComment, (comment) => comment.event)
-  comments!: EventComment[];
 }
