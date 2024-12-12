@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
-import { Event } from "./Event";
-import { User } from "./User";
+import { Event } from "./Event.js";
+import { User } from "./User.js";
 
 @Entity()
 export class EventComment {
@@ -10,12 +10,10 @@ export class EventComment {
   @Column("text")
   content!: string;
 
-  @ManyToOne(() => Event, (event) => event.comments)
-  @JoinColumn({ name: "event_id" })
+  @ManyToOne(() => Event)
   event!: Event;
 
-  @ManyToOne(() => User, (user) => user.comments)
-  @JoinColumn({ name: "user_id" })
+  @ManyToOne(() => User)
   user!: User;
 
   @Column("timestamp", { default: () => "CURRENT_TIMESTAMP" })
