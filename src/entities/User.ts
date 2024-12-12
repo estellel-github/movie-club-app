@@ -1,8 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { Event } from "./Event";
-import { RSVP } from "./RSVP";
-import { EventComment } from "./EventComment";
-import { Book } from "./Book";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+
+export enum UserStatus {
+  ACTIVE = "active",
+  SUSPENDED = "suspended"
+}
+
+export enum UserRole {
+  USER = "user",
+  HOST = "host",
+  ADMIN = "admin"
+}
 
 @Entity()
 export class User {
@@ -15,26 +22,20 @@ export class User {
   @Column({ length: 255 })
   password!: string;
 
-  @Column({ length: 50 })
-  status!: string;
+  @Column({
+    type: "enum",
+    enum: UserStatus,
+  })
+  status!: UserStatus;
 
-  @Column("jsonb")
-  roles!: string[];
+  @Column({
+    type: "enum",
+    enum: UserRole,
+  })
+  role!: UserRole;
 
   @Column("text")
   intro_msg!: string;
-
-  @OneToMany(() => Event, (event) => event.host)
-  hostedEvents!: Event[];
-
-  @OneToMany(() => RSVP, (rsvp) => rsvp.user)
-  rsvps!: RSVP[];
-
-  @OneToMany(() => EventComment, (comment) => comment.user)
-  comments!: EventComment[];
-
-  @OneToMany(() => Book, (book) => book.added_by)
-  addedBooks!: Book[];
 
   @Column("timestamp", { default: () => "CURRENT_TIMESTAMP" })
   created_at!: Date;
