@@ -1,22 +1,32 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
-import { Event } from "./Event";
-import { User } from "./User";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { Event } from "./Event.js";
+import { User } from "./User.js";
+
+export enum RSVPStatus {
+  GOING = "going",
+  WAITLISTED = "waitlisted",
+  NOT_GOING = "not going",
+}
 
 @Entity()
 export class RSVP {
   @PrimaryGeneratedColumn("uuid")
   rsvp_id!: string;
 
-  @Column({ length: 50 })
-  status!: string;
-
-  @ManyToOne(() => Event, (event) => event.rsvps)
-  @JoinColumn({ name: "event_id" })
+  @ManyToOne(() => Event)
   event!: Event;
 
-  @ManyToOne(() => User, (user) => user.rsvps)
-  @JoinColumn({ name: "user_id" })
+  @ManyToOne(() => User)
   user!: User;
+
+  @Column({
+    type: "enum",
+    enum: RSVPStatus,
+  })
+  status!: RSVPStatus;
+
+  @Column("int", { default: 0 })
+  priority!: number;
 
   @Column("timestamp", { default: () => "CURRENT_TIMESTAMP" })
   created_at!: Date;
