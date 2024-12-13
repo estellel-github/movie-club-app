@@ -8,6 +8,7 @@ import bookRoutes from './modules/book/route.js';
 import eventRoutes from './modules/event/route.js';
 import rsvpRoutes from './modules/rsvp/route.js';
 import commentRoutes from './modules/comment/route.js';
+import healthRoutes from './app/health.js';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use('/api/books', bookRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/rsvps', rsvpRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/health', healthRoutes);
 
 // Start server and connect to the database
 (async () => {
