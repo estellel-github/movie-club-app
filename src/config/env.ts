@@ -1,22 +1,22 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
-dotenv.config();
+const envFile =
+  process.env.NODE_ENV === "production"
+    ? ".env.prod"
+    : process.env.NODE_ENV === "test"
+      ? ".env.test"
+      : ".env.dev";
+
+dotenv.config({ path: envFile });
 
 export const config = {
-  port: process.env.PORT || 3000,
+  port: process.env.PORT,
   db: {
-    host: process.env.DB_HOST || 'localhost',
-    port: Number(process.env.DB_PORT) || 5432,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    name: process.env.DB_NAME || 'bookclub_db',
+    host: process.env.POSTGRES_HOST,
+    port: Number(process.env.POSTGRES_PORT),
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    name: process.env.POSTGRES_DB,
   },
+  jwtSecret: process.env.JWT_SECRET || "default_secret",
 };
-
-if (!config.db.user) {
-  console.warn('Warning: DB_USER is not set in the .env file.');
-}
-
-if (!config.db.password) {
-  console.warn('Warning: DB_PASSWORD is not set in the .env file.');
-}
