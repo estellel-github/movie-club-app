@@ -18,5 +18,6 @@ export const config = {
     password: process.env.POSTGRES_PASSWORD,
     name: process.env.POSTGRES_DB,
   },
-  jwtSecret: process.env.JWT_SECRET || "default_secret",
+  jwtSecret: process.env.JWT_SECRET,
+  env: process.env.NODE_ENV,
 };
