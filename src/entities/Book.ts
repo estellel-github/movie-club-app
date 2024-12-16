@@ -6,10 +6,10 @@ export class Book {
   @PrimaryGeneratedColumn("uuid")
   book_id!: string;
 
-  @Column({ length: 255 })
+  @Column("varchar", { length: 255 })
   title!: string;
 
-  @Column({ length: 255 })
+  @Column("varchar", { length: 255 })
   author!: string;
 
   @Column("text")
@@ -21,7 +21,7 @@ export class Book {
   @Column("int")
   nb_pages!: number;
 
-  @Column({ length: 13, unique: true })
+  @Column("varchar", { length: 13, unique: true })
   isbn!: string;
 
   @Column("timestamp", { default: () => "CURRENT_TIMESTAMP" })

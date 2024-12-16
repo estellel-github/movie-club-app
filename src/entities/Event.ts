@@ -13,7 +13,7 @@ export class Event {
   @PrimaryGeneratedColumn("uuid")
   event_id!: string;
 
-  @Column({ length: 255 })
+  @Column("varchar", { length: 255 })
   title!: string;
 
   @Column("text")
@@ -22,7 +22,7 @@ export class Event {
   @Column("timestamp")
   date!: Date;
 
-  @Column({ length: 255 })
+  @Column("varchar", { length: 255 })
   location!: string;
 
   @Column("timestamp", { default: () => "CURRENT_TIMESTAMP" })
