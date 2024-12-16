@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 export default defineConfig([
   {
     files: ["src/**/*.ts"],
-    ignores: ["node_modules", "dist", "src/tests/**/*"],
+    ignores: ["node_modules/", "dist/", "coverage/", "src/__tests__/"],
     languageOptions: {
       parser: parserTypescript,
       parserOptions: {
