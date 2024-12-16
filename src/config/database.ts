@@ -16,8 +16,8 @@ export const AppDataSource = new DataSource({
   password: config.db.password,
   database: config.db.name,
   entities: [User, Book, Event, RSVP, EventComment],
-  synchronize: true,
-  logging: true,
+  synchronize: config.env === 'development',
+  logging: config.env === 'development',
 });
 
 export const connectDB = async () => {
@@ -25,7 +25,7 @@ export const connectDB = async () => {
   while (retries) {
     try {
       await AppDataSource.initialize();
-      console.log('Connected to the database');
+      console.log(`Database connected: ${config.db.name}`);
       break;
     } catch (error) {
       console.error(`Database connection failed. Retrying... (${retries} retries left)`);
