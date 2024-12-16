@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { connectDB } from './config/database.js';
+import "reflect-metadata";
 
 import adminRoutes from './modules/admin/route.js';
 import userRoutes from './modules/user/route.js';
