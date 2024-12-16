@@ -29,25 +29,27 @@ app.use('/api/comments', commentRoutes);
 app.use('/health', healthRoutes);
 
 // Start server and connect to the database
-(async () => {
-  try {
-    await connectDB();
+if (process.env.NODE_ENV !== 'test') {
+  (async () => {
+    try {
+      await connectDB();
 
-    const server = app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
-    });
+      const server = app.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}`);
+      });
 
-    server.on('error', (error: any) => {
-      if (error.code === 'EADDRINUSE') {
-        console.error(`Port ${PORT} is already in use. Choose a different port.`);
-      } else if (error.code === 'EACCES') {
-        console.error(`Permission denied. Unable to bind to port ${PORT}.`);
-      } else {
-        console.error('Server encountered an error:', error);
-      }
+      server.on('error', (error: any) => {
+        if (error.code === 'EADDRINUSE') {
+          console.error(`Port ${PORT} is already in use. Choose a different port.`);
+        } else if (error.code === 'EACCES') {
+          console.error(`Permission denied. Unable to bind to port ${PORT}.`);
+        } else {
+          console.error('Server encountered an error:', error);
+        }
+        process.exit(1);
+      });
+    } catch (error) {
       process.exit(1);
-    });
-  } catch (error) {
-    process.exit(1);
-  }
-})();
+    }
+  })();
+}
