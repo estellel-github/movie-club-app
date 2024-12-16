@@ -28,7 +28,10 @@ export class Event {
   @Column("timestamp", { default: () => "CURRENT_TIMESTAMP" })
   created_at!: Date;
 
-  @Column("timestamp", { default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  @Column("timestamp", {
+    default: () => "CURRENT_TIMESTAMP",
+    onUpdate: "CURRENT_TIMESTAMP",
+  })
   updated_at!: Date;
 
   @ManyToOne(() => Book)
@@ -41,5 +44,4 @@ export class Event {
 
   @Column("int")
   max_attendees!: number;
-
 }

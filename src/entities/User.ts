@@ -2,13 +2,13 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 export enum UserStatus {
   ACTIVE = "active",
-  SUSPENDED = "suspended"
+  SUSPENDED = "suspended",
 }
 
 export enum UserRole {
   USER = "user",
   HOST = "host",
-  ADMIN = "admin"
+  ADMIN = "admin",
 }
 
 @Entity()
@@ -40,6 +40,9 @@ export class User {
   @Column("timestamp", { default: () => "CURRENT_TIMESTAMP" })
   created_at!: Date;
 
-  @Column("timestamp", { default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  @Column("timestamp", {
+    default: () => "CURRENT_TIMESTAMP",
+    onUpdate: "CURRENT_TIMESTAMP",
+  })
   updated_at!: Date;
 }
