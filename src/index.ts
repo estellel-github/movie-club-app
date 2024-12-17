@@ -9,7 +9,7 @@ import bookRoutes from "./modules/book/route.js";
 import eventRoutes from "./modules/event/route.js";
 import rsvpRoutes from "./modules/rsvp/route.js";
 import commentRoutes from "./modules/comment/route.js";
-import healthRoutes from "./app/health.js";
+import healthRoutes from "./modules/health/route.js";
 
 dotenv.config();
 
