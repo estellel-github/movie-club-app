@@ -1,11 +1,17 @@
 import dotenv from "dotenv";
 
-const envFile =
-  process.env.NODE_ENV === "production"
-    ? ".env.prod"
-    : process.env.NODE_ENV === "test"
-      ? ".env.test"
-      : ".env.dev";
+const envFile = (() => {
+  switch (process.env.NODE_ENV) {
+    case "production":
+      return ".env.prod";
+    case "test":
+      return ".env.test";
+    case "local":
+      return ".env.local";
+    default:
+      return ".env.dev";
+  }
+})();
 
 dotenv.config({ path: envFile });
 
