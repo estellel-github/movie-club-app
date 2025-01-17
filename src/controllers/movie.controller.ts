@@ -13,8 +13,12 @@ export const getMovieById = async (req: Request, res: Response) => {
     const movie = await movieService.getMovieById(req.params.id);
     if (!movie) return res.status(404).json({ error: "Movie not found" });
     res.status(200).json(movie);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(400).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -32,8 +36,12 @@ export const createMovie = async (req: CustomRequest, res: Response) => {
     const user_id = req.user.user_id;
     const movie = await movieService.createMovie(req.body, user_id);
     res.status(201).json(movie);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(400).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -41,8 +49,12 @@ export const updateMovie = async (req: Request, res: Response) => {
   try {
     const movie = await movieService.updateMovie(req.params.id, req.body);
     res.status(200).json(movie);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(400).json({ error: "Unknown error" });
+    }
   }
 };
 
