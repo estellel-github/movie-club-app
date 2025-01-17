@@ -5,6 +5,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   intro_msg: string;
+  username: string;
 }
 
 export interface LoginRequest {

@@ -8,6 +8,7 @@ import type {
   RegisterResponse,
   LoginResponse,
 } from "../types/auth.types.js";
+import { userStatuses } from "../models/user.entity.js";
 
 export class AuthService {
   private userRepo: Repository<User>;
@@ -20,16 +21,23 @@ export class AuthService {
     email,
     password,
     intro_msg,
+    username,
   }: RegisterRequest): Promise<RegisterResponse> {
-    const existingUser = await this.userRepo.findOneBy({ email });
-    if (existingUser) throw new Error("User already exists");
+    const existingEmail = await this.userRepo.findOneBy({ email });
+    if (existingEmail) throw new Error("Email already exists");
+
+    const existingUsername = await this.userRepo.findOneBy({ username });
+    if (existingUsername) throw new Error("Username already exists");
 
     const hashedPassword = await argon2.hash(password);
     const user = this.userRepo.create({
       email,
       password: hashedPassword,
       intro_msg,
+      username,
+      status: userStatuses[0],
     });
+
     const savedUser = await this.userRepo.save(user);
 
     const { password: _, ...userWithoutPassword } = savedUser;
