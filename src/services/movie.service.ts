@@ -1,7 +1,6 @@
 import type { Repository } from "typeorm";
 import { AppDataSource } from "../config/database.js";
 import { Movie } from "../models/movie.entity.js";
-import { User } from "../models/user.entity.js";
 
 export class MovieService {
   private movieRepo: Repository<Movie>;
@@ -15,17 +14,10 @@ export class MovieService {
   }
 
   async getMovieById(movie_id: string): Promise<Movie | null> {
-    return this.movieRepo.findOne({
-      where: { movie_id },
-      relations: ["added_by"],
-    });
+    return this.movieRepo.findOneBy({ movie_id });
   }
 
   async createMovie(data: Partial<Movie>, user_id: string): Promise<Movie> {
-    const user = await AppDataSource.getRepository(User).findOneBy({ user_id });
-    if (!user) {
-      throw new Error("User not found");
-    }
     const movie = this.movieRepo.create({ ...data, added_by_user_id: user_id });
     return this.movieRepo.save(movie);
   }

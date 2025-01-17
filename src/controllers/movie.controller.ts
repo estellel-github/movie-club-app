@@ -4,8 +4,17 @@ import { MovieService } from "../services/movie.service.js";
 const movieService = new MovieService();
 
 export const getAllMovies = async (req: Request, res: Response) => {
-  const movies = await movieService.getAllMovies();
-  res.status(200).json(movies);
+  try {
+    const movies = await movieService.getAllMovies();
+    if (!movies) return res.status(404).json({ error: "No movies found" });
+    res.status(200).json(movies);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(400).json({ error: "Unknown error" });
+    }
+  }
 };
 
 export const getMovieById = async (req: Request, res: Response) => {
@@ -48,6 +57,10 @@ export const createMovie = async (req: CustomRequest, res: Response) => {
 export const updateMovie = async (req: Request, res: Response) => {
   try {
     const movie = await movieService.updateMovie(req.params.id, req.body);
+    if (!movie)
+      res
+        .status(404)
+        .json({ error: `No existing movie with id ${req.params.id}` });
     res.status(200).json(movie);
   } catch (error: unknown) {
     if (error instanceof Error) {
