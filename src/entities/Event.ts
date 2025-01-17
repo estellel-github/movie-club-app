@@ -6,7 +6,7 @@ import {
   JoinColumn,
 } from "typeorm";
 import { User } from "./User.js";
-import { Book } from "./Book.js";
+import { Movie } from "./Movie.js";
 
 @Entity()
 export class Event {
@@ -34,9 +34,9 @@ export class Event {
   })
   updated_at!: Date;
 
-  @ManyToOne(() => Book)
-  @JoinColumn({ name: "book_id" })
-  book!: Book;
+  @ManyToOne(() => Movie)
+  @JoinColumn({ name: "movie_id" })
+  movie!: Movie;
 
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: "host_id" })

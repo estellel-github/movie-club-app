@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: bookclub_prod_app
+    container_name: movieclub_prod_app
     restart: on-failure:3
     build:
       context: .
@@ -14,7 +14,7 @@ services:
         condition: service_healthy
 
   db:
-    container_name: bookclub_prod_db
+    container_name: movieclub_prod_db
     image: postgres:17-alpine
     restart: on-failure:3
     ports:

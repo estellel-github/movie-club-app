@@ -3,7 +3,7 @@ import { DataSource } from "typeorm";
 import { config } from "./env.js";
 
 import { User } from "../entities/User.js";
-import { Book } from "../entities/Book.js";
+import { Movie } from "../entities/Movie.js";
 import { Event } from "../entities/Event.js";
 import { RSVP } from "../entities/RSVP.js";
 import { EventComment } from "../entities/EventComment.js";
@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   username: config.db.user,
   password: config.db.password,
   database: config.db.name,
-  entities: [User, Book, Event, RSVP, EventComment],
+  entities: [User, Movie, Event, RSVP, EventComment],
   synchronize: config.env === "development",
   logging: config.env === "development",
 });

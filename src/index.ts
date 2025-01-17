@@ -4,9 +4,9 @@ import { connectDB } from "./config/database.js";
 import "reflect-metadata";
 
 import adminRoutes from "./modules/admin/route.js";
-// import authRoutes from "./modules/auth/route.js";
+import authRoutes from "./modules/auth/route.js";
 import userRoutes from "./modules/user/route.js";
-import bookRoutes from "./modules/book/route.js";
+import movieRoutes from "./modules/movie/route.js";
 import eventRoutes from "./modules/event/route.js";
 import rsvpRoutes from "./modules/rsvp/route.js";
 import commentRoutes from "./modules/comment/route.js";
@@ -21,9 +21,9 @@ app.use(express.json());
 
 // Routes
 app.use("/api/admin", adminRoutes);
-// app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/books", bookRoutes);
+app.use("/api/movies", movieRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/rsvps", rsvpRoutes);
 app.use("/api/comments", commentRoutes);

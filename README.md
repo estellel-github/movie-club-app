@@ -1,1 +1,1 @@
-# book-club-app
+# movie-club-app
