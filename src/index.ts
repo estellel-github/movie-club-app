@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import { connectDB } from "./config/database.js";
+import type { Server } from "http";
 import "reflect-metadata";
 
 import adminRoutes from "./routes/admin.route.js";
@@ -10,11 +11,12 @@ import movieRoutes from "./routes/movie.route.js";
 import eventRoutes from "./routes/event.route.js";
 import rsvpRoutes from "./routes/rsvp.route.js";
 import commentRoutes from "./routes/comment.route.js";
+import healthRoutes from "./routes/health.route.js";
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
@@ -27,6 +29,7 @@ app.use("/api/movies", movieRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/rsvps", rsvpRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/health", healthRoutes);
 
 // Start server and connect to the database
 if (process.env.NODE_ENV !== "test") {
@@ -34,7 +37,7 @@ if (process.env.NODE_ENV !== "test") {
     try {
       await connectDB();
 
-      const server = app.listen(PORT, () => {
+      const server: Server = app.listen(PORT, "0.0.0.0", () => {
         console.log(`✅ Server running at http://localhost:${PORT}`);
       });
 
