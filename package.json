@@ -8,7 +8,8 @@
     "dev": "docker compose -f docker-compose.dev.yml --env-file .env.dev up --build",
     "prod": "docker compose -f docker-compose.prod.yml --env-file .env.prod up --build",
     "start": "node dist/index.js",
-    "stop:": "docker compose down -v",
+    "stop:dev": "docker compose -f docker-compose.dev.yml --env-file .env.dev down --volumes",
+    "stop:prod": "docker compose -f docker-compose.dev.yml --env-file .env.prod down --volumes",
     "start:local": "NODE_ENV=local tsx src/index.ts",
     "test": "NODE_ENV=test jest --verbose",
     "test:watch": "NODE_ENV=test jest --watch",
@@ -51,5 +52,6 @@
   },
   "engines": {
     "pnpm": ">=8.0.0"
-  }
+  },
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
 }
