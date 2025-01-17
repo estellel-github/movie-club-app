@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { Event } from "./Event.js";
-import { User } from "./User.js";
+import { Event } from "./event.entity.js";
+import { User } from "./user.entity.js";
 
 export enum RSVPStatus {
   GOING = "going",

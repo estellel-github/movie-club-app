@@ -2,11 +2,11 @@ import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { config } from "./env.js";
 
-import { User } from "../entities/User.js";
-import { Movie } from "../entities/Movie.js";
-import { Event } from "../entities/Event.js";
-import { RSVP } from "../entities/RSVP.js";
-import { EventComment } from "../entities/EventComment.js";
+import { User } from "../models/user.entity.js";
+import { Movie } from "../models/movie.entity.js";
+import { Event } from "../models/event.entity.js";
+import { RSVP } from "../models/RSVP.entity.js";
+import { EventComment } from "../models/comment.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",

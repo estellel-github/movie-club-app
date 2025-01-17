@@ -5,8 +5,8 @@ import {
   ManyToOne,
   JoinColumn,
 } from "typeorm";
-import { User } from "./User.js";
-import { Movie } from "./Movie.js";
+import { User } from "./user.entity.js";
+import { Movie } from "./movie.entity.js";
 
 @Entity()
 export class Event {

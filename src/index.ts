@@ -3,13 +3,13 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/database.js";
 import "reflect-metadata";
 
-import adminRoutes from "./modules/admin/route.js";
-import authRoutes from "./modules/auth/route.js";
-import userRoutes from "./modules/user/route.js";
-import movieRoutes from "./modules/movie/route.js";
-import eventRoutes from "./modules/event/route.js";
-import rsvpRoutes from "./modules/rsvp/route.js";
-import commentRoutes from "./modules/comment/route.js";
+import adminRoutes from "./routes/admin.route.js";
+import authRoutes from "./routes/auth.route.js";
+import userRoutes from "./routes/user.route.js";
+import movieRoutes from "./routes/movie.route.js";
+import eventRoutes from "./routes/event.route.js";
+import rsvpRoutes from "./routes/rsvp.route.js";
+import commentRoutes from "./routes/comment.route.js";
 
 dotenv.config();
 
