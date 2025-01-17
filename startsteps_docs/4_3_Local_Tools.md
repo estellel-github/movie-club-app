@@ -22,10 +22,10 @@ hostname -I
 2. Click **Database** → **New Database Connection**.
 3. **Select PostgreSQL** as the database type and click **Next**.
 4. **Enter the connection details**:
-    - **Host**: Use `localhost` or the WSL2/Docker host IP.
-    - **Port**: `5432` (or the port mapped in your Docker Compose file).
+   - **Host**: Use `localhost` or the WSL2/Docker host IP.
+   - **Port**: `5432` (or the port mapped in your Docker Compose file).
 5. Click **Test Connection**:
-    - If the connection fails, verify the host, port, username, and password.
+   - If the connection fails, verify the host, port, username, and password.
 
 In case of errors make sure to recheck:
 
@@ -36,8 +36,8 @@ In case of errors make sure to recheck:
 
 Connection successful:
 
-![image.png](image%201.png)
+![image.png](image_1.png)
 
 Resulting ER Diagram:
 
-![image.png](image%202.png)
+![image.png](image_2.png)
