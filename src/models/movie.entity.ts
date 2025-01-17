@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from "typeorm";
 import { User } from "./user.entity.js";
 
 @Entity()
@@ -30,6 +36,13 @@ export class Movie {
   @Column("text", { nullable: true })
   cover_image_url?: string;
 
+  @Column("uuid", { nullable: false })
+  added_by_user_id!: string;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: "added_by_user_id" })
+  added_by?: User;
+
   @Column("timestamp", { default: () => "CURRENT_TIMESTAMP" })
   created_at!: Date;
 
@@ -38,7 +51,4 @@ export class Movie {
     onUpdate: "CURRENT_TIMESTAMP",
   })
   updated_at!: Date;
-
-  @ManyToOne(() => User)
-  added_by!: User;
 }
