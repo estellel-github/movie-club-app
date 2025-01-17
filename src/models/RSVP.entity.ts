@@ -2,11 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { Event } from "./event.entity.js";
 import { User } from "./user.entity.js";
 
-export enum RSVPStatus {
-  GOING = "going",
-  WAITLISTED = "waitlisted",
-  NOT_GOING = "not going",
-}
+export const rsvpStatuses = ["going", "waitlisted", "not going"] as const;
+export type RSVPStatus = (typeof rsvpStatuses)[number];
 
 @Entity()
 export class RSVP {
@@ -19,10 +16,7 @@ export class RSVP {
   @ManyToOne(() => User)
   user!: User;
 
-  @Column({
-    type: "enum",
-    enum: RSVPStatus,
-  })
+  @Column({ type: "enum", enum: rsvpStatuses, default: rsvpStatuses[0] })
   status!: RSVPStatus;
 
   @Column("int", { default: 0 })
