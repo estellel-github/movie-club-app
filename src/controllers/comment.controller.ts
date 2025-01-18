@@ -50,6 +50,10 @@ export const updateComment = async (
   try {
     const { content } = req.body;
     const user_id = req.user?.user_id;
+
+    if (!user_id) {
+      throw new Error("User ID is required");
+    }
     const { commentId: comment_id } = req.params;
 
     const updatedComment = await commentService.updateComment(
@@ -57,6 +61,7 @@ export const updateComment = async (
       user_id,
       content,
     );
+
     res.status(200).json(updatedComment);
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -73,6 +78,9 @@ export const deleteComment = async (
 ) => {
   try {
     const user_id = req.user?.user_id;
+    if (!user_id) {
+      throw new Error("User ID is required");
+    }
     const { commentId: comment_id } = req.params;
 
     await commentService.deleteComment(comment_id, user_id);
