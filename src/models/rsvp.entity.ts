@@ -1,6 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { Event } from "./event.entity.js";
-import { User } from "./user.entity.js";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 export const rsvpStatuses = ["going", "waitlisted", "not going"] as const;
 export type RSVPStatus = (typeof rsvpStatuses)[number];
@@ -10,11 +8,11 @@ export class RSVP {
   @PrimaryGeneratedColumn("uuid")
   rsvp_id!: string;
 
-  @ManyToOne(() => Event)
-  event!: Event;
+  @Column("uuid", { nullable: false })
+  event_id!: string;
 
-  @ManyToOne(() => User)
-  user!: User;
+  @Column("uuid", { nullable: false })
+  user_id!: string;
 
   @Column({ type: "enum", enum: rsvpStatuses, default: rsvpStatuses[0] })
   status!: RSVPStatus;

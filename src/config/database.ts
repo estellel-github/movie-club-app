@@ -5,7 +5,7 @@ import { config } from "./env.js";
 import { User } from "../models/user.entity.js";
 import { Movie } from "../models/movie.entity.js";
 import { Event } from "../models/event.entity.js";
-import { RSVP } from "../models/RSVP.entity.js";
+import { RSVP } from "../models/rsvp.entity.js";
 import { EventComment } from "../models/comment.entity.js";
 
 export const AppDataSource = new DataSource({
