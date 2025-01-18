@@ -2,6 +2,7 @@ import argon2 from "argon2";
 import type { User } from "../models/user.entity.js";
 import type { Repository } from "typeorm";
 import { generateToken } from "../utils/jwt.js";
+import { excludeFields } from "../utils/excludeFields.js";
 import type {
   RegisterRequest,
   LoginRequest,
@@ -40,7 +41,7 @@ export class AuthService {
 
     const savedUser = await this.userRepo.save(user);
 
-    const { password: _, ...userWithoutPassword } = savedUser;
+    const userWithoutPassword = excludeFields(savedUser, ["password"]);
     return {
       message: "User registered successfully",
       user: userWithoutPassword,

@@ -10,11 +10,14 @@ export class MovieService {
   }
 
   async getAllMovies(): Promise<Movie[]> {
-    return this.movieRepo.find();
+    const movies = await this.movieRepo.find();
+    return movies;
   }
 
   async getMovieById(movie_id: string): Promise<Movie | null> {
-    return this.movieRepo.findOneBy({ movie_id });
+    const movie = await this.movieRepo.findOneBy({ movie_id });
+    if (!movie) throw new Error("Movie not found");
+    return movie;
   }
 
   async createMovie(data: Partial<Movie>, user_id: string): Promise<Movie> {
