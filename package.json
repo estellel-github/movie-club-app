@@ -16,9 +16,11 @@
     "test:coverage": "NODE_ENV=test jest --coverage",
     "build": "tsc",
     "migrate": "ts-node src/migrations/run.ts",
-    "inspect": "docker inspect movieclub_dev_app | grep IPAddress"
+    "inspect": "docker inspect movieclub_dev_app | grep IPAddress",
+    "seed": "ts-node ./seed.ts"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.4.0",
     "argon2": "^0.41.1",
     "dotenv": "^16.4.7",
     "eslint-define-config": "^2.1.0",
