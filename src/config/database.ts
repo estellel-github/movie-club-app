@@ -6,7 +6,7 @@ import { User } from "../models/user.entity.js";
 import { Movie } from "../models/movie.entity.js";
 import { Event } from "../models/event.entity.js";
 import { RSVP } from "../models/rsvp.entity.js";
-import { EventComment } from "../models/comment.entity.js";
+import { Comment } from "../models/comment.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   username: config.db.user,
   password: config.db.password,
   database: config.db.name,
-  entities: [User, Movie, Event, RSVP, EventComment],
+  entities: [User, Movie, Event, RSVP, Comment],
   synchronize: config.env === "development",
   logging: config.env === "development",
 });
