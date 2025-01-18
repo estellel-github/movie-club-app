@@ -1,21 +1,25 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { Event } from "./event.entity.js";
-import { User } from "./user.entity.js";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
-export class EventComment {
+export class Comment {
   @PrimaryGeneratedColumn("uuid")
-  event_comment_id!: string;
+  comment_id!: string;
+
+  @Column("uuid", { nullable: false })
+  event_id!: string;
+
+  @Column("uuid", { nullable: false })
+  user_id!: string;
 
   @Column("text")
   content!: string;
 
-  @ManyToOne(() => Event)
-  event!: Event;
-
-  @ManyToOne(() => User)
-  user!: User;
-
   @Column("timestamp", { default: () => "CURRENT_TIMESTAMP" })
   created_at!: Date;
+
+  @Column("timestamp", {
+    default: () => "CURRENT_TIMESTAMP",
+    onUpdate: "CURRENT_TIMESTAMP",
+  })
+  updated_at!: Date;
 }
