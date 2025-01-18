@@ -10,7 +10,7 @@ export class MovieService {
   }
 
   async getAllMovies(): Promise<Movie[]> {
-    return this.movieRepo.find({ relations: ["added_by"] });
+    return this.movieRepo.find();
   }
 
   async getMovieById(movie_id: string): Promise<Movie | null> {

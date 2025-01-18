@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from "typeorm";
-import { User } from "./user.entity.js";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
 export class Movie {
@@ -38,10 +31,6 @@ export class Movie {
 
   @Column("uuid", { nullable: false })
   added_by_user_id!: string;
-
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: "added_by_user_id" })
-  added_by?: User;
 
   @Column("timestamp", { default: () => "CURRENT_TIMESTAMP" })
   created_at!: Date;
