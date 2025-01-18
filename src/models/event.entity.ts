@@ -1,12 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from "typeorm";
-import { User } from "./user.entity.js";
-import { Movie } from "./movie.entity.js";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
 export class Event {
@@ -34,13 +26,11 @@ export class Event {
   })
   updated_at!: Date;
 
-  @ManyToOne(() => Movie)
-  @JoinColumn({ name: "movie_id" })
-  movie!: Movie;
+  @Column("uuid", { nullable: false })
+  movie_id!: string;
 
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: "host_id" })
-  host!: User;
+  @Column("uuid", { nullable: true })
+  host_id!: string | null;
 
   @Column("int")
   max_attendees!: number;
