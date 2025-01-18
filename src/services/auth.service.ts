@@ -24,6 +24,9 @@ export class AuthService {
     intro_msg,
     username,
   }: RegisterRequest): Promise<RegisterResponse> {
+    // if (!email || !password || !intro_msg || !username)
+    //   throw new Error("Cannot register: Missing information");
+
     const existingEmail = await this.userRepo.findOneBy({ email });
     if (existingEmail) throw new Error("Email already exists");
 
