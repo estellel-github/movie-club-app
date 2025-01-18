@@ -24,7 +24,7 @@ app.use(express.json());
 // Routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/profile", userRoutes);
 app.use("/api/movies", movieRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/rsvps", rsvpRoutes);
