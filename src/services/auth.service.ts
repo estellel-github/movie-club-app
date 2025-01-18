@@ -10,6 +10,7 @@ import type {
   LoginResponse,
 } from "../types/auth.types.js";
 import { userStatuses } from "../models/user.entity.js";
+import { CustomError } from "utils/customError.js";
 
 export class AuthService {
   private userRepo: Repository<User>;
@@ -24,14 +25,19 @@ export class AuthService {
     intro_msg,
     username,
   }: RegisterRequest): Promise<RegisterResponse> {
-    // if (!email || !password || !intro_msg || !username)
-    //   throw new Error("Cannot register: Missing information");
+    if (!email || !password || !intro_msg || !username) {
+      throw new CustomError("Missing required fields", 400); // Bad Request
+    }
 
     const existingEmail = await this.userRepo.findOneBy({ email });
-    if (existingEmail) throw new Error("Email already exists");
+    if (existingEmail) {
+      throw new CustomError("Email already exists", 409); // Conflict
+    }
 
     const existingUsername = await this.userRepo.findOneBy({ username });
-    if (existingUsername) throw new Error("Username already exists");
+    if (existingUsername) {
+      throw new CustomError("Username already exists", 409); // Conflict
+    }
 
     const hashedPassword = await argon2.hash(password);
     const user = this.userRepo.create({
@@ -39,7 +45,7 @@ export class AuthService {
       password: hashedPassword,
       intro_msg,
       username,
-      status: userStatuses[0],
+      status: userStatuses[0], // Default status
     });
 
     const savedUser = await this.userRepo.save(user);
@@ -52,9 +58,13 @@ export class AuthService {
   }
 
   async login({ email, password }: LoginRequest): Promise<LoginResponse> {
+    if (!email || !password) {
+      throw new CustomError("Missing email or password", 400); // Bad Request
+    }
+
     const user = await this.userRepo.findOneBy({ email });
     if (!user || !(await argon2.verify(user.password, password))) {
-      throw new Error("Invalid email or password");
+      throw new CustomError("Invalid email or password", 401); // Unauthorized
     }
 
     const token = generateToken({ user_id: user.user_id, role: user.role });

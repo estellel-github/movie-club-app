@@ -12,6 +12,7 @@ import eventRoutes from "./routes/event.route.js";
 import rsvpRoutes from "./routes/rsvp.route.js";
 import commentRoutes from "./routes/comment.route.js";
 import healthRoutes from "./routes/health.route.js";
+import { errorHandler } from "middleware/errorHandler.middleware.js";
 
 dotenv.config();
 
@@ -30,6 +31,9 @@ app.use("/api/events", eventRoutes);
 app.use("/api/rsvps", rsvpRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/health", healthRoutes);
+
+// Error Handler
+app.use(errorHandler);
 
 // Start server and connect to the database
 if (process.env.NODE_ENV !== "test") {
