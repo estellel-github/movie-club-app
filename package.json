@@ -15,7 +15,8 @@
     "test:watch": "NODE_ENV=test jest --watch",
     "test:coverage": "NODE_ENV=test jest --coverage",
     "build": "tsc",
-    "migrate": "ts-node src/migrations/run.ts"
+    "migrate": "ts-node src/migrations/run.ts",
+    "inspect": "docker inspect movieclub_dev_app | grep IPAddress"
   },
   "dependencies": {
     "argon2": "^0.41.1",
