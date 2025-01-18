@@ -1,12 +1,6 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.js";
-
-export interface AuthenticatedRequest extends Request {
-  user?: {
-    user_id: string;
-    role: string;
-  };
-}
+import type { AuthenticatedRequest } from "types/express.js";
 
 export const authenticate = (
   req: AuthenticatedRequest,
@@ -25,11 +19,17 @@ export const authenticate = (
 
   try {
     const decoded = verifyToken(token);
+    if (!decoded || !decoded.user_id) {
+      throw new Error("Invalid token");
+    }
     req.user = decoded as { user_id: string; role: string }; // Attach user info to the request
+    console.log("Authenticated user:", req.user);
     next(); // Pass control to the next middleware or route handler
-  } catch (err: any) {
-    return res
-      .status(401)
-      .json({ message: "Invalid or expired token", error: err.message });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(401).json({ error: error.message });
+    } else {
+      res.status(401).json({ error: "Unknown error" });
+    }
   }
 };
