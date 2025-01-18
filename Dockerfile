@@ -10,8 +10,11 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
+COPY wait-for-it.sh /usr/src/app/wait-for-it.sh
+RUN chmod +x /usr/src/app/wait-for-it.sh
+
 RUN pnpm run build
 
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+CMD ["sh", "-c", "/usr/src/app/wait-for-it.sh movieclub_dev_db 5432 -- node dist/config/seed.js && pnpm start"]
