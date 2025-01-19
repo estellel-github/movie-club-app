@@ -1,21 +1,26 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { UserService } from "../services/user.service.js";
 import { userRoles, userStatuses } from "../models/user.entity.js";
+import { CustomError } from "../utils/customError.js";
 
 const userService = new UserService();
 
 // Suspend User
-export const suspendUser = async (req: Request, res: Response) => {
+export const suspendUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { userId } = req.params;
     const user = await userService.getUserById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      throw new CustomError("User not found", 404);
     }
 
     if (user.status === userStatuses[1]) {
-      return res.status(400).json({ error: "User already suspended" });
+      throw new CustomError("User already suspended", 400);
     }
 
     const updatedUser = await userService.updateUser(userId, {
@@ -26,31 +31,34 @@ export const suspendUser = async (req: Request, res: Response) => {
       message: "User suspended successfully",
       userId: updatedUser.user_id,
     });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: "Unknown error" });
-    }
+  } catch (error) {
+    next(
+      error instanceof CustomError
+        ? error
+        : new CustomError("Failed to suspend user", 500),
+    );
   }
 };
 
 // Update User Roles
-export const updateUserRole = async (req: Request, res: Response) => {
+export const updateUserRole = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { userId } = req.params;
     const { role } = req.body;
 
     // Validate role
-    const validRoles = userRoles;
-    if (!validRoles.includes(role)) {
-      return res.status(400).json({ error: "Invalid role specified" });
+    if (!userRoles.includes(role)) {
+      throw new CustomError("Invalid role specified", 400);
     }
 
     const user = await userService.getUserById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      throw new CustomError("User not found", 404);
     }
 
     const updatedUser = await userService.updateUser(userId, { role });
@@ -60,11 +68,11 @@ export const updateUserRole = async (req: Request, res: Response) => {
       userId: updatedUser.user_id,
       role: updatedUser.role,
     });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: "Unknown error" });
-    }
+  } catch (error) {
+    next(
+      error instanceof CustomError
+        ? error
+        : new CustomError("Failed to update user role", 500),
+    );
   }
 };

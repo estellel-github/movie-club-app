@@ -1,32 +1,41 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { CommentService } from "../services/comment.service.js";
-import type { AuthenticatedRequest } from "types/express.js";
+import { CustomError } from "../utils/customError.js";
 
 const commentService = new CommentService();
 
-export const getCommentsByEvent = async (req: Request, res: Response) => {
+export const getCommentsByEvent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const comments = await commentService.getCommentsByEvent(
       req.params.eventId,
     );
     res.status(200).json(comments);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(400).json({ error: "Unknown error" });
-    }
+  } catch (error) {
+    next(
+      error instanceof CustomError
+        ? error
+        : new CustomError("Failed to get comments", 500),
+    );
   }
 };
 
 export const createComment = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
+  next: NextFunction,
 ) => {
   try {
     const { content } = req.body;
-    const user_id = req.user?.user_id; // Authenticated user ID
+    const user_id = req.user?.user_id;
     const event_id = req.params.eventId;
+
+    if (!content || !user_id || !event_id) {
+      throw new CustomError("Missing required fields", 400);
+    }
 
     const newComment = await commentService.createComment({
       content,
@@ -34,62 +43,69 @@ export const createComment = async (
       event_id,
     });
     res.status(201).json(newComment);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(400).json({ error: "Unknown error" });
-    }
+  } catch (error) {
+    next(
+      error instanceof CustomError
+        ? error
+        : new CustomError("Failed to create comment", 500),
+    );
   }
 };
 
 export const updateComment = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
+  next: NextFunction,
 ) => {
   try {
     const { content } = req.body;
     const user_id = req.user?.user_id;
 
     if (!user_id) {
-      throw new Error("User ID is required");
+      throw new CustomError("User ID is required", 401);
     }
+
     const { commentId: comment_id } = req.params;
+
+    if (!content || !comment_id) {
+      throw new CustomError("Missing required fields", 400);
+    }
 
     const updatedComment = await commentService.updateComment(
       comment_id,
       user_id,
       content,
     );
-
     res.status(200).json(updatedComment);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(400).json({ error: "Unknown error" });
-    }
+  } catch (error) {
+    next(
+      error instanceof CustomError
+        ? error
+        : new CustomError("Failed to update comment", 500),
+    );
   }
 };
 
 export const deleteComment = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
+  next: NextFunction,
 ) => {
   try {
     const user_id = req.user?.user_id;
-    if (!user_id) {
-      throw new Error("User ID is required");
-    }
     const { commentId: comment_id } = req.params;
+
+    if (!user_id || !comment_id) {
+      throw new CustomError("Missing required fields", 400);
+    }
 
     await commentService.deleteComment(comment_id, user_id);
     res.status(204).send();
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(400).json({ error: "Unknown error" });
-    }
+  } catch (error) {
+    next(
+      error instanceof CustomError
+        ? error
+        : new CustomError("Failed to delete comment", 500),
+    );
   }
 };

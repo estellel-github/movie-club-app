@@ -1,62 +1,120 @@
 import type { Response } from "express";
 import { UserService } from "../services/user.service.js";
-import type { AuthenticatedRequest } from "../types/express.d.ts";
+import { CustomError } from "../utils/customError.js";
+import type { UpdateUserBody, UserRequest } from "types/express.js";
+import { excludeFields } from "utils/excludeFields.js";
 
 const userService = new UserService();
 
+// Get User Profile
 export const getUserProfile = async (
-  req: AuthenticatedRequest,
+  req: UserRequest,
   res: Response,
+  next: Function,
 ) => {
-  console.log(`Request received: ${req.method} ${req.url}`);
   try {
-    const { user_id } = req.user!;
-    const user = await userService.getUserById(user_id);
-    if (!user) return res.status(404).json({ error: "User not found" });
+    const { user_id: targetUserId } = req.params;
 
-    const userProfile = { ...user, password: undefined };
+    if (!targetUserId) {
+      throw new CustomError("Target user ID not provided", 400); // Bad Request
+    }
+
+    const targetUser = await userService.getUserById(targetUserId);
+
+    if (!targetUser) {
+      throw new CustomError("Target user not found", 404); // Not Found
+    }
+
+    // Exclude sensitive information
+    const userProfile = excludeFields(targetUser, ["email", "password"]);
+
     res.status(200).json(userProfile);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: "Unknown error" });
-    }
+  } catch (error) {
+    next(
+      error instanceof CustomError
+        ? error
+        : new CustomError("Failed to retrieve user profile", 500),
+    );
   }
 };
 
+// Update User Profile
 export const updateUserProfile = async (
-  req: AuthenticatedRequest,
+  req: UserRequest & { body: UpdateUserBody },
   res: Response,
+  next: Function,
 ) => {
   try {
-    const { user_id } = req.user!;
-    const updatedUser = await userService.updateUser(user_id, req.body);
-    res
-      .status(200)
-      .json({ message: "Profile updated successfully", user: updatedUser });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(400).json({ error: "Unknown error" });
+    const { user_id: requestingUserId, role } = req.user!;
+    const { user_id: targetUserId } = req.params;
+
+    if (!targetUserId) {
+      throw new CustomError("Target user ID not provided", 400); // Bad Request
     }
+
+    // Ensure only the target user or admin can update the profile
+    if (requestingUserId !== targetUserId && role !== "admin") {
+      throw new CustomError("Unauthorized to update this user's profile", 403);
+    }
+
+    const targetUser = await userService.getUserById(targetUserId);
+
+    if (!targetUser) {
+      throw new CustomError("Target user not found", 404); // Not Found
+    }
+
+    if (!req.body || Object.keys(req.body).length === 0) {
+      throw new CustomError("Request body is missing or empty", 400); // Bad Request
+    }
+
+    const updatedUser = await userService.updateUser(targetUserId, req.body);
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    next(
+      error instanceof CustomError
+        ? error
+        : new CustomError("Failed to update user profile", 500),
+    );
   }
 };
 
+// Delete User Account
 export const deleteUserAccount = async (
-  req: AuthenticatedRequest,
+  req: UserRequest,
   res: Response,
+  next: Function,
 ) => {
   try {
-    const { user_id } = req.user!;
-    await userService.deleteUser(user_id);
-    res.status(204).send();
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(400).json({ error: "Unknown error" });
+    const { user_id: requestingUserId, role } = req.user!;
+    const { user_id: targetUserId } = req.params;
+
+    if (!targetUserId) {
+      throw new CustomError("Target user ID not provided", 400); // Bad Request
     }
+
+    // Ensure only the target user or admin can delete the profile
+    if (requestingUserId !== targetUserId && role !== "admin") {
+      throw new CustomError("Unauthorized to delete this user's account", 403);
+    }
+
+    const targetUser = await userService.getUserById(targetUserId);
+
+    if (!targetUser) {
+      throw new CustomError("Target user not found", 404); // Not Found
+    }
+
+    await userService.deleteUser(targetUserId);
+
+    res.status(204).send();
+  } catch (error) {
+    next(
+      error instanceof CustomError
+        ? error
+        : new CustomError("Failed to delete user account", 500),
+    );
   }
 };
