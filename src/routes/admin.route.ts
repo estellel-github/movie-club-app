@@ -7,7 +7,6 @@ import {
 
 const router = Router();
 
-// Admin routes
 router.patch("/suspend/:userId", authenticate, suspendUser);
 router.patch("/roles/:userId", authenticate, updateUserRole);
 

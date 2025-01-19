@@ -6,15 +6,13 @@ import {
   updateMovie,
   deleteMovie,
 } from "../controllers/movie.controller.js";
-import { authenticate } from "../middleware/auth.middleware.js"; // Auth middleware
+import { authenticate } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-// Public routes
 router.get("/", getAllMovies);
 router.get("/:id", getMovieById);
 
-// Protected routes
 router.post("/", authenticate, createMovie);
 router.patch("/:id", authenticate, updateMovie);
 router.delete("/:id", authenticate, deleteMovie);
