@@ -2,8 +2,6 @@ import type { NextFunction, Request, Response } from "express";
 import { AuthService } from "../services/auth.service.js";
 import { AppDataSource } from "../config/database.js";
 import { User } from "../models/user.entity.js";
-import type { RegisterRequest, LoginRequest } from "../types/auth.types.js";
-import { registerSchema, loginSchema } from "../validators/auth.validators.js";
 import { CustomError } from "utils/customError.js";
 
 const authService = new AuthService(AppDataSource.getRepository(User));
@@ -14,8 +12,7 @@ export const register = async (
   next: NextFunction,
 ) => {
   try {
-    const validatedData: RegisterRequest = registerSchema.parse(req.body);
-    const response = await authService.register(validatedData);
+    const response = await authService.register(req.body);
     res.status(201).json(response);
   } catch (error) {
     next(
@@ -32,8 +29,7 @@ export const login = async (
   next: NextFunction,
 ) => {
   try {
-    const requestData: LoginRequest = loginSchema.parse(req.body);
-    const response = await authService.login(requestData);
+    const response = await authService.login(req.body);
     res.status(200).json(response);
   } catch (error) {
     next(
