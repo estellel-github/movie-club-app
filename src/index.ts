@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/database.js";
 import type { Server } from "http";
 import "reflect-metadata";
+import { checkRedisHealth } from "./utils/redisHealthCheck.js";
 
 import adminRoutes from "./routes/admin.route.js";
 import authRoutes from "./routes/auth.route.js";
@@ -12,12 +13,14 @@ import eventRoutes from "./routes/event.route.js";
 import rsvpRoutes from "./routes/rsvp.route.js";
 import commentRoutes from "./routes/comment.route.js";
 import healthRoutes from "./routes/health.route.js";
-import { errorHandler } from "middleware/errorHandler.middleware.js";
+import { errorHandler } from "./middleware/errorHandler.middleware.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+
+checkRedisHealth();
 
 // Middleware to parse JSON request bodies
 app.use(express.json());

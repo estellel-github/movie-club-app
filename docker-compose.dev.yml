@@ -12,6 +12,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
 
   db:
     container_name: movieclub_dev_db
@@ -28,6 +30,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  redis:
+    container_name: movieclub_dev_redis
+    image: redis:latest
+    restart: on-failure:3
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--requirepass", "redis_pw_123"]
+    environment:
+      - REDIS_PASSWORD=redis_pw_123
 
 volumes:
   postgres_data_dev:
