@@ -5,16 +5,17 @@ import type { Server } from "http";
 import "reflect-metadata";
 import { checkRedisHealth } from "./utils/redisHealthCheck.js";
 import { rsvpWorker } from "./workers/rsvpWorker.js";
+import { errorHandler } from "./middleware/errorHandler.middleware.js";
 
 import adminRoutes from "./routes/admin.route.js";
 import authRoutes from "./routes/auth.route.js";
-import userRoutes from "./routes/user.route.js";
-import movieRoutes from "./routes/movie.route.js";
-import eventRoutes from "./routes/event.route.js";
-import rsvpRoutes from "./routes/rsvp.route.js";
 import commentRoutes from "./routes/comment.route.js";
+import eventRoutes from "./routes/event.route.js";
+import feedRoutes from "./routes/feed.route.js";
 import healthRoutes from "./routes/health.route.js";
-import { errorHandler } from "./middleware/errorHandler.middleware.js";
+import movieRoutes from "./routes/movie.route.js";
+import rsvpRoutes from "./routes/rsvp.route.js";
+import userRoutes from "./routes/user.route.js";
 
 dotenv.config();
 
@@ -32,12 +33,13 @@ app.use(express.json());
 // Routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/profile", userRoutes);
-app.use("/api/movies", movieRoutes);
-app.use("/api/events", eventRoutes);
-app.use("/api/rsvps", rsvpRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/feed", feedRoutes);
 app.use("/api/health", healthRoutes);
+app.use("/api/movies", movieRoutes);
+app.use("/api/profile", userRoutes);
+app.use("/api/rsvps", rsvpRoutes);
 
 // Error Handler
 app.use(errorHandler);
