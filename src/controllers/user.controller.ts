@@ -1,4 +1,4 @@
-import type { Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { UserService } from "@/services/user.service.js";
 import { CustomError } from "@/utils/customError.js";
 import type { UpdateUserBody, UserRequest } from "@/types/express.js";
@@ -40,34 +40,26 @@ export const getUserProfile = async (
 
 // Update User Profile
 export const updateUserProfile = async (
-  req: UserRequest & { body: UpdateUserBody },
+  req: Request,
   res: Response,
-  next: Function,
+  next: NextFunction
 ) => {
   try {
     const { user_id: requestingUserId, role } = req.user!;
-    const { user_id: targetUserId } = req.params;
+    const { user_id: targetUserId } = req.params; //
+    const data = req.body;
 
     if (!targetUserId) {
       throw new CustomError("Target user ID not provided", 400); // Bad Request
     }
 
-    // Ensure only the target user or admin can update the profile
-    if (requestingUserId !== targetUserId && role !== "admin") {
-      throw new CustomError("Unauthorized to update this user's profile", 403);
-    }
-
-    const targetUser = await userService.getUserById(targetUserId);
-
-    if (!targetUser) {
-      throw new CustomError("Target user not found", 404); // Not Found
-    }
-
-    if (!req.body || Object.keys(req.body).length === 0) {
-      throw new CustomError("Request body is missing or empty", 400); // Bad Request
-    }
-
-    const updatedUser = await userService.updateUser(targetUserId, req.body);
+    // Check if the user is allowed to update their profile
+    const updatedUser = await userService.updateUser(
+      targetUserId,
+      data,
+      requestingUserId,
+      role
+    );
 
     res.status(200).json({
       message: "Profile updated successfully",
@@ -77,16 +69,15 @@ export const updateUserProfile = async (
     next(
       error instanceof CustomError
         ? error
-        : new CustomError("Failed to update user profile", 500),
+        : new CustomError("Failed to update user profile", 500)
     );
   }
 };
 
-// Delete User Account
 export const deleteUserAccount = async (
-  req: UserRequest,
+  req: Request,
   res: Response,
-  next: Function,
+  next: NextFunction
 ) => {
   try {
     const { user_id: requestingUserId, role } = req.user!;
@@ -96,25 +87,15 @@ export const deleteUserAccount = async (
       throw new CustomError("Target user ID not provided", 400); // Bad Request
     }
 
-    // Ensure only the target user or admin can delete the profile
-    if (requestingUserId !== targetUserId && role !== "admin") {
-      throw new CustomError("Unauthorized to delete this user's account", 403);
-    }
+    // Check if the user is allowed to delete their profile
+    await userService.deleteUser(targetUserId, requestingUserId, role);
 
-    const targetUser = await userService.getUserById(targetUserId);
-
-    if (!targetUser) {
-      throw new CustomError("Target user not found", 404); // Not Found
-    }
-
-    await userService.deleteUser(targetUserId);
-
-    res.status(204).send();
+    res.status(204).send(); // No content, successfully deleted
   } catch (error) {
     next(
       error instanceof CustomError
         ? error
-        : new CustomError("Failed to delete user account", 500),
+        : new CustomError("Failed to delete user account", 500)
     );
   }
 };

@@ -20,7 +20,7 @@ router.get(
   getUserProfile,
 );
 router.patch(
-  "/update",
+  "/:user_id",
   authenticate,
   validate(updateUserProfileSchema),
   updateUserProfile,

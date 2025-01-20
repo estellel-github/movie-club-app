@@ -12,14 +12,27 @@ import {
   updateEventSchema,
 } from "@/validators/event.validator.js";
 import { validate } from "@/middleware/validation.middleware.js";
+import { authorize } from "@/middleware/permissions.middleware.js";
 
 const router = Router();
 
 router.get("/", getAllEvents);
 router.get("/:id", getEventById);
 
-router.post("/", authenticate, validate(createEventSchema), createEvent);
-router.patch("/:id", authenticate, validate(updateEventSchema), updateEvent);
-router.delete("/:id", authenticate, deleteEvent);
+router.post(
+  "/",
+  authenticate,
+  authorize(["admin", "host"]),
+  validate(createEventSchema),
+  createEvent,
+);
+router.patch(
+  "/:id",
+  authenticate,
+  authorize(["admin", "host"]),
+  validate(updateEventSchema),
+  updateEvent,
+);
+router.delete("/:id", authenticate, authorize(["admin", "host"]), deleteEvent);
 
 export default router;

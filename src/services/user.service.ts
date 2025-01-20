@@ -5,7 +5,7 @@ import { excludeFields } from "@/utils/excludeFields.js";
 import { CustomError } from "@/utils/customError.js";
 import argon2 from "argon2";
 import { userStatuses } from "@/models/user.entity.js";
-import { ActivityLogService } from "./activity.service.js"; // Import ActivityLogService
+import { ActivityLogService } from "@/services/activity.service.js";
 
 export class UserService {
   private userRepo: Repository<User> = AppDataSource.getRepository(User);
@@ -13,7 +13,7 @@ export class UserService {
 
   constructor() {
     this.userRepo = AppDataSource.getRepository(User);
-    this.activityLogService = new ActivityLogService(); // Initialize ActivityLogService
+    this.activityLogService = new ActivityLogService();
   }
 
   // Check if user exists by email or username
@@ -62,7 +62,7 @@ export class UserService {
       // Log the "User Joined" activity after successful user creation
       await this.activityLogService.logUserJoin(
         savedUser.user_id,
-        savedUser.username,
+        savedUser.username
       );
 
       return savedUser;
@@ -89,14 +89,22 @@ export class UserService {
     }
   }
 
+  // Update user profile (Only the user or admin can update)
   async updateUser(
     user_id: string,
     data: Partial<User>,
+    requestingUserId: string,
+    role: string
   ): Promise<Partial<User>> {
     try {
+      // Ensure the user is the one trying to update their profile or the requester is an admin
+      if (user_id !== requestingUserId && role !== "admin") {
+        throw new CustomError("Unauthorized to update this user's profile", 403); // Forbidden
+      }
+
       const user = await this.getUserById(user_id);
       if (!user) {
-        throw new CustomError("User not found", 404);
+        throw new CustomError("User not found", 404); // Not Found
       }
 
       Object.assign(user, data);
@@ -110,11 +118,17 @@ export class UserService {
     }
   }
 
-  async deleteUser(user_id: string): Promise<void> {
+  // Delete user account (Only the user or admin can delete)
+  async deleteUser(user_id: string, requestingUserId: string, role: string): Promise<void> {
     try {
+      // Ensure the user is the one trying to delete their account or the requester is an admin
+      if (user_id !== requestingUserId && role !== "admin") {
+        throw new CustomError("Unauthorized to delete this user's account", 403); // Forbidden
+      }
+
       const result = await this.userRepo.delete(user_id);
       if (result.affected === 0) {
-        throw new CustomError("User not found", 404);
+        throw new CustomError("User not found", 404); // Not Found
       }
     } catch (error) {
       if (error instanceof CustomError) {

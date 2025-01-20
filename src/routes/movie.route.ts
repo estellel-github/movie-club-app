@@ -12,14 +12,29 @@ import {
   createMovieSchema,
   updateMovieSchema,
 } from "@/validators/movie.validator.js";
+import { authorize } from "@/middleware/permissions.middleware.js";
 
 const router = Router();
 
 router.get("/", getAllMovies);
 router.get("/:id", getMovieById);
 
-router.post("/", authenticate, validate(createMovieSchema), createMovie);
-router.patch("/:id", authenticate, validate(updateMovieSchema), updateMovie);
-router.delete("/:id", authenticate, deleteMovie);
+router.post(
+  "/",
+  authenticate,
+  authorize(["admin", "host"]),
+  validate(createMovieSchema),
+  createMovie,
+);
+
+router.patch(
+  "/:id",
+  authenticate,
+  authorize(["admin", "host"]),
+  validate(updateMovieSchema),
+  updateMovie,
+);
+
+router.delete("/:id", authenticate, authorize(["admin", "host"]), deleteMovie);
 
 export default router;

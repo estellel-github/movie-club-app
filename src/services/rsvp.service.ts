@@ -78,6 +78,11 @@ export class RSVPService {
     }
   }
 
+  // Fetch an RSVP by its ID
+  async getRSVPById(rsvp_id: string): Promise<RSVP | null> {
+    return await this.rsvpRepo.findOneBy({ rsvp_id });
+  }
+
   async updateRSVP(rsvp_id: string, status: RSVP["status"]): Promise<RSVP> {
     try {
       const rsvp = await this.rsvpRepo.findOneBy({ rsvp_id });

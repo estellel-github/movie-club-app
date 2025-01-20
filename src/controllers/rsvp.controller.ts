@@ -20,6 +20,11 @@ export const createRSVP = async (
 
     const { user_id } = req.user; // Auth middleware adds user_id
 
+    // Check if the user is trying to RSVP for themselves
+    if (user_id !== req.params.user_id) {
+      throw new CustomError("You can only RSVP for yourself", 403); // Forbidden
+    }
+
     const rsvp = await rsvpService.createRSVP(event_id, user_id);
     res.status(201).json(rsvp);
   } catch (error) {
@@ -59,11 +64,25 @@ export const updateRSVP = async (
     const { status } = req.body;
 
     if (!status) {
-      throw new CustomError("Status is required to update RSVP", 400);
+      throw new CustomError("Status is required to update RSVP", 400); // Bad Request
     }
 
-    const rsvp = await rsvpService.updateRSVP(rsvp_id, status);
-    res.status(200).json(rsvp);
+    // Fetch the RSVP to check if the authenticated user is the creator
+    const rsvp = await rsvpService.getRSVPById(rsvp_id);
+
+    if (!rsvp) {
+      throw new CustomError("RSVP not found", 404); // Not Found
+    }
+
+    // Check if the authenticated user is the one who created the RSVP
+    if (rsvp.user_id !== req.user?.user_id) {
+      throw new CustomError("You are not authorized to update this RSVP", 403); // Forbidden
+    }
+
+    // Proceed to update the RSVP if the user is authorized
+    const updatedRSVP = await rsvpService.updateRSVP(rsvp_id, status);
+    res.status(200).json(updatedRSVP);
+
   } catch (error) {
     next(
       error instanceof CustomError
