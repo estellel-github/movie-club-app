@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { rsvpStatuses } from "../models/rsvp.entity.js";
+import { rsvpStatuses } from "@/models/rsvp.entity.js";
 
 // Create RSVP schema
 export const createRSVPSchema = z.object({

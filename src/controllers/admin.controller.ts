@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
-import { UserService } from "../services/user.service.js";
-import { userRoles, userStatuses } from "../models/user.entity.js";
-import { CustomError } from "../utils/customError.js";
+import { UserService } from "@/services/user.service.js";
+import { userRoles, userStatuses } from "@/models/user.entity.js";
+import { CustomError } from "@/utils/customError.js";
 
 const userService = new UserService();
 

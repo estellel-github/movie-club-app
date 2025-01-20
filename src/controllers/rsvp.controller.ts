@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { RSVPService } from "../services/rsvp.service.js";
-import { CustomError } from "../utils/customError.js";
+import { RSVPService } from "@/services/rsvp.service.js";
+import { CustomError } from "@/utils/customError.js";
 
 const rsvpService = new RSVPService();
 

@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { ActivityLogService } from "../services/activity.service.js";
-import { CustomError } from "../utils/customError.js";
+import { ActivityLogService } from "@/services/activity.service.js";
+import { CustomError } from "@/utils/customError.js";
 
 const activityLogService = new ActivityLogService();
 

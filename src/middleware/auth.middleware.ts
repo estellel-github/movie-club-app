@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../utils/jwt.js";
-import { CustomError } from "../utils/customError.js";
+import { verifyToken } from "@/utils/jwt.js";
+import { CustomError } from "@/utils/customError.js";
 
 export const authenticate = async (
   req: Request,

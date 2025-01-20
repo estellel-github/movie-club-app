@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { userRoles } from "../models/user.entity.js";
+import { userRoles } from "@/models/user.entity.js";
 
 // Validate role change
 export const updateRoleSchema = z.object({

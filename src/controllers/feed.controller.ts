@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { FeedService } from "../services/feed.service.js";
-import { CustomError } from "../utils/customError.js";
+import { FeedService } from "@/services/feed.service.js";
+import { CustomError } from "@/utils/customError.js";
 
 const feedService = new FeedService();
 
