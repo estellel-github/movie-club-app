@@ -5,15 +5,33 @@ import { excludeFields } from "../utils/excludeFields.js";
 import { CustomError } from "../utils/customError.js";
 import argon2 from "argon2";
 import { userStatuses } from "../models/user.entity.js";
-import { ActivityLogService } from "./activityLog.service.js"; // Import ActivityLogService
+import { ActivityLogService } from "./activity.service.js"; // Import ActivityLogService
 
 export class UserService {
-  private userRepo: Repository<User>;
-  private activityLogService: ActivityLogService; // Instance of ActivityLogService
+  private userRepo: Repository<User> = AppDataSource.getRepository(User);
+  private activityLogService = new ActivityLogService();
 
   constructor() {
     this.userRepo = AppDataSource.getRepository(User);
     this.activityLogService = new ActivityLogService(); // Initialize ActivityLogService
+  }
+
+  // Check if user exists by email or username
+  async checkIfUserExists(email: string, username: string) {
+    const existingEmail = await this.userRepo.findOneBy({ email });
+    if (existingEmail) {
+      throw new CustomError("Email already exists", 409);
+    }
+
+    const existingUsername = await this.userRepo.findOneBy({ username });
+    if (existingUsername) {
+      throw new CustomError("Username already exists", 409);
+    }
+  }
+
+  // Find user by email
+  async findUserByEmail(email: string): Promise<User | null> {
+    return await this.userRepo.findOneBy({ email });
   }
 
   // Create a new user

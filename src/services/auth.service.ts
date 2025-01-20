@@ -1,6 +1,4 @@
 import argon2 from "argon2";
-import type { User } from "../models/user.entity.js";
-import type { Repository } from "typeorm";
 import { generateToken } from "../utils/jwt.js";
 import { excludeFields } from "../utils/excludeFields.js";
 import type {
@@ -13,11 +11,9 @@ import { CustomError } from "../utils/customError.js";
 import { UserService } from "./user.service.js";
 
 export class AuthService {
-  private userRepo: Repository<User>;
   private userService: UserService;
 
-  constructor(userRepo: Repository<User>) {
-    this.userRepo = userRepo;
+  constructor() {
     this.userService = new UserService();
   }
 
@@ -31,17 +27,8 @@ export class AuthService {
       throw new CustomError("Missing required fields", 400); // Bad Request
     }
 
-    const existingEmail = await this.userRepo.findOneBy({ email });
-    if (existingEmail) {
-      throw new CustomError("Email already exists", 409); // Conflict
-    }
+    await this.userService.checkIfUserExists(email, username);
 
-    const existingUsername = await this.userRepo.findOneBy({ username });
-    if (existingUsername) {
-      throw new CustomError("Username already exists", 409); // Conflict
-    }
-
-    // Create the user using UserService
     const newUser = await this.userService.createUser({
       email,
       password,
@@ -61,7 +48,7 @@ export class AuthService {
       throw new CustomError("Missing email or password", 400); // Bad Request
     }
 
-    const user = await this.userRepo.findOneBy({ email });
+    const user = await this.userService.findUserByEmail(email);
     if (!user || !(await argon2.verify(user.password, password))) {
       throw new CustomError("Invalid email or password", 401); // Unauthorized
     }

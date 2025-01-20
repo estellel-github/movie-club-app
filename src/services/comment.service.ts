@@ -2,7 +2,7 @@ import type { Repository } from "typeorm";
 import { AppDataSource } from "../config/database.js";
 import { Comment } from "../models/comment.entity.js";
 import { CustomError } from "../utils/customError.js";
-import { ActivityLogService } from "../services/activityLog.service.js"; // Import ActivityLogService
+import { ActivityLogService } from "./activity.service.js"; // Import ActivityLogService
 
 export class CommentService {
   private commentRepo: Repository<Comment>;
