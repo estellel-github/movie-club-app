@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { rsvpStatuses } from "../models/rsvp.entity.js"; // Import rsvpStatuses from the entity
+import { rsvpStatuses } from "../models/rsvp.entity.js";
 
 // Create RSVP schema
 export const createRSVPSchema = z.object({
-  event_id: z.string().uuid("Invalid Event ID format"), // Validate UUID
-  user_id: z.string().uuid("Invalid User ID format"), // Validate UUID
+  event_id: z.string().uuid("Invalid Event ID format"),
+  user_id: z.string().uuid("Invalid User ID format"),
   status: z.enum(rsvpStatuses).optional(), // Optional status, defaults to "going"
 });
 
