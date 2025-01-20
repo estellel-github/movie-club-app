@@ -1,8 +1,8 @@
 import type { Response } from "express";
-import { UserService } from "../services/user.service.js";
-import { CustomError } from "../utils/customError.js";
-import type { UpdateUserBody, UserRequest } from "../types/express.js";
-import { excludeFields } from "../utils/excludeFields.js";
+import { UserService } from "@/services/user.service.js";
+import { CustomError } from "@/utils/customError.js";
+import type { UpdateUserBody, UserRequest } from "@/types/express.js";
+import { excludeFields } from "@/utils/excludeFields.js";
 
 const userService = new UserService();
 

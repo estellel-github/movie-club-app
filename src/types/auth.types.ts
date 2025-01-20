@@ -1,4 +1,4 @@
-import type { User } from "../models/user.entity.js";
+import type { User } from "@/models/user.entity.js";
 
 // Request types
 export interface RegisterRequest {

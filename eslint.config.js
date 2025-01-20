@@ -51,6 +51,10 @@ export default defineConfig([
         typescript: {
           project: path.resolve(__dirname, "./tsconfig.json"),
         },
+        alias: {
+          map: [["@", "./src"]],
+          extensions: [".ts", ".js", ".jsx", ".json"],
+        },
       },
     },
     ignores: ["dist/**", "node_modules/**", "src/tests/**"],

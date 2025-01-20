@@ -1,7 +1,7 @@
 import type { Job } from "bullmq";
 import { Worker } from "bullmq";
-import { redisConfig } from "../config/redis.js";
-import { RSVPService } from "../services/rsvp.service.js";
+import { redisConfig } from "@/config/redis.js";
+import { RSVPService } from "@/services/rsvp.service.js";
 
 const rsvpService = new RSVPService();
 

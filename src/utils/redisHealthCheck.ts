@@ -1,4 +1,4 @@
-import { redisConnection } from "../config/redis.js";
+import { redisConnection } from "@/config/redis.js";
 
 export async function checkRedisHealth() {
   try {

@@ -12,7 +12,10 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"] // Maps "@" to the "src" folder
+    }
   },
   "include": ["src/**/*.ts", "src/config/*"],
   "exclude": ["node_modules"]
