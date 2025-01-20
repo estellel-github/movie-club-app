@@ -10,7 +10,7 @@ import type {
   LoginResponse,
 } from "../types/auth.types.js";
 import { userStatuses } from "../models/user.entity.js";
-import { CustomError } from "utils/customError.js";
+import { CustomError } from "../utils/customError.js";
 
 export class AuthService {
   private userRepo: Repository<User>;

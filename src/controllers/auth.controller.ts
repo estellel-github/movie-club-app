@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { AuthService } from "../services/auth.service.js";
 import { AppDataSource } from "../config/database.js";
 import { User } from "../models/user.entity.js";
-import { CustomError } from "utils/customError.js";
+import { CustomError } from "../utils/customError.js";
 
 const authService = new AuthService(AppDataSource.getRepository(User));
 

@@ -10,8 +10,8 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import {
   createEventSchema,
   updateEventSchema,
-} from "validators/event.validator.js";
-import { validate } from "middleware/validation.middleware.js";
+} from "../validators/event.validator.js";
+import { validate } from "../middleware/validation.middleware.js";
 
 const router = Router();
 
