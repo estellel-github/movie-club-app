@@ -26,7 +26,7 @@ router.patch(
   updateUserProfile,
 );
 router.delete(
-  "/delete",
+  "/:user_id",
   authenticate,
   validate(userIdParamSchema),
   deleteUserAccount,

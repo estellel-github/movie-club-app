@@ -6,14 +6,14 @@ import { excludeFields } from "@/utils/excludeFields.js";
 
 const userService = new UserService();
 
-// Get User Profile
 export const getUserProfile = async (
-  req: UserRequest,
+  req: Request,
   res: Response,
-  next: Function,
+  next: NextFunction
 ) => {
   try {
     const { user_id: targetUserId } = req.params;
+    const { user_id: requestingUserId, role } = req.user!;
 
     if (!targetUserId) {
       throw new CustomError("Target user ID not provided", 400); // Bad Request
@@ -25,20 +25,27 @@ export const getUserProfile = async (
       throw new CustomError("Target user not found", 404); // Not Found
     }
 
-    // Exclude sensitive information
-    const userProfile = excludeFields(targetUser, ["email", "password"]);
+    // Check if the profile is public or private
+    let userProfile;
+    if (targetUserId === requestingUserId || role === "admin") {
+      // If the user is viewing their own profile or an admin is viewing,
+      // return the full profile (including email)
+      userProfile = targetUser;
+    } else {
+      // Exclude sensitive information for public profiles
+      userProfile = excludeFields(targetUser, ["email", "password"]);
+    }
 
     res.status(200).json(userProfile);
   } catch (error) {
     next(
       error instanceof CustomError
         ? error
-        : new CustomError("Failed to retrieve user profile", 500),
+        : new CustomError("Failed to retrieve user profile", 500)
     );
   }
 };
 
-// Update User Profile
 export const updateUserProfile = async (
   req: Request,
   res: Response,
