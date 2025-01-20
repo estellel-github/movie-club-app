@@ -72,22 +72,3 @@ export const updateRSVP = async (
     );
   }
 };
-
-export const deleteRSVP = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { id: rsvp_id } = req.params;
-
-    await rsvpService.deleteRSVP(rsvp_id);
-    res.status(204).send();
-  } catch (error) {
-    next(
-      error instanceof CustomError
-        ? error
-        : new CustomError("Failed to delete RSVP", 500),
-    );
-  }
-};
