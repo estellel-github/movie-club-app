@@ -1,7 +1,6 @@
 import { AppDataSource } from "../config/database.js";
 import type { ActivityType } from "../models/activity.entity.js";
 import { ActivityLog, activityTypes } from "../models/activity.entity.js";
-import { createActivityLogSchema } from "../validators/activity.validator.js";
 import { CustomError } from "../utils/customError.js";
 
 export class ActivityLogService {
@@ -13,23 +12,15 @@ export class ActivityLogService {
     user_id?: string,
     event_id?: string,
   ): Promise<void> {
+    // Validation done in the middleware, no need to validate here again
     try {
-      // Validate activity log input
-      await createActivityLogSchema.parseAsync({
-        type,
-        details,
-        user_id,
-        event_id,
-      });
-
       const activityLog = new ActivityLog();
       activityLog.type = type;
       activityLog.details = details;
-      activityLog.user_id = user_id || null; // If user_id is passed, associate, otherwise null
-      activityLog.event_id = event_id || null; // Same for event_id
+      activityLog.user_id = user_id || null;
+      activityLog.event_id = event_id || null;
       activityLog.created_at = new Date();
 
-      // Save the activity log to the database
       await this.activityLogRepo.save(activityLog);
     } catch (error) {
       if (error instanceof CustomError) {

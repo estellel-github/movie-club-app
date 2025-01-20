@@ -23,10 +23,6 @@ export class AuthService {
     intro_msg,
     username,
   }: RegisterRequest): Promise<RegisterResponse> {
-    if (!email || !password || !intro_msg || !username) {
-      throw new CustomError("Missing required fields", 400); // Bad Request
-    }
-
     await this.userService.checkIfUserExists(email, username);
 
     const newUser = await this.userService.createUser({
@@ -35,7 +31,6 @@ export class AuthService {
       intro_msg,
       username,
     });
-
     const userWithoutPassword = excludeFields(newUser, ["password"]);
     return {
       message: "User registered successfully",
@@ -44,13 +39,9 @@ export class AuthService {
   }
 
   async login({ email, password }: LoginRequest): Promise<LoginResponse> {
-    if (!email || !password) {
-      throw new CustomError("Missing email or password", 400); // Bad Request
-    }
-
     const user = await this.userService.findUserByEmail(email);
     if (!user || !(await argon2.verify(user.password, password))) {
-      throw new CustomError("Invalid email or password", 401); // Unauthorized
+      throw new CustomError("Invalid email or password", 401);
     }
 
     const token = generateToken({ user_id: user.user_id, role: user.role });
