@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getActivityFeed } from "../controllers/feed.controller.js";
+import { getActivityFeed } from "@/controllers/feed.controller.js";
 
 const router = Router();
 

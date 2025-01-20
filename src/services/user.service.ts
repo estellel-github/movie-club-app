@@ -1,10 +1,10 @@
 import type { Repository } from "typeorm";
-import { AppDataSource } from "../config/database.js";
-import { User } from "../models/user.entity.js";
-import { excludeFields } from "../utils/excludeFields.js";
-import { CustomError } from "../utils/customError.js";
+import { AppDataSource } from "@/config/database.js";
+import { User } from "@/models/user.entity.js";
+import { excludeFields } from "@/utils/excludeFields.js";
+import { CustomError } from "@/utils/customError.js";
 import argon2 from "argon2";
-import { userStatuses } from "../models/user.entity.js";
+import { userStatuses } from "@/models/user.entity.js";
 import { ActivityLogService } from "./activity.service.js"; // Import ActivityLogService
 
 export class UserService {

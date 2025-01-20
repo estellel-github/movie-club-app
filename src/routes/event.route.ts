@@ -5,13 +5,13 @@ import {
   createEvent,
   updateEvent,
   deleteEvent,
-} from "../controllers/event.controller.js";
-import { authenticate } from "../middleware/auth.middleware.js";
+} from "@/controllers/event.controller.js";
+import { authenticate } from "@/middleware/auth.middleware.js";
 import {
   createEventSchema,
   updateEventSchema,
-} from "../validators/event.validator.js";
-import { validate } from "../middleware/validation.middleware.js";
+} from "@/validators/event.validator.js";
+import { validate } from "@/middleware/validation.middleware.js";
 
 const router = Router();
 

@@ -1,16 +1,16 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth.middleware.js";
+import { authenticate } from "@/middleware/auth.middleware.js";
 import {
   createComment,
   updateComment,
   deleteComment,
   getCommentsByEvent,
-} from "../controllers/comment.controller.js";
-import { validate } from "../middleware/validation.middleware.js";
+} from "@/controllers/comment.controller.js";
+import { validate } from "@/middleware/validation.middleware.js";
 import {
   createCommentSchema,
   updateCommentSchema,
-} from "../validators/comment.validator.js";
+} from "@/validators/comment.validator.js";
 
 const router = Router();
 

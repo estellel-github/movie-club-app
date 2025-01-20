@@ -1,11 +1,11 @@
 import type { Repository } from "typeorm";
-import { AppDataSource } from "../config/database.js";
-import { RSVP } from "../models/rsvp.entity.js";
-import { Event } from "../models/event.entity.js";
-import { CustomError } from "../utils/customError.js";
-import type { RSVPStatus } from "../models/rsvp.entity.js";
-import { rsvpStatuses } from "../models/rsvp.entity.js";
-import { rsvpQueue } from "../queues/rsvpQueue.js";
+import { AppDataSource } from "@/config/database.js";
+import { RSVP } from "@/models/rsvp.entity.js";
+import { Event } from "@/models/event.entity.js";
+import { CustomError } from "@/utils/customError.js";
+import type { RSVPStatus } from "@/models/rsvp.entity.js";
+import { rsvpStatuses } from "@/models/rsvp.entity.js";
+import { rsvpQueue } from "@/queues/rsvpQueue.js";
 import { ActivityLogService } from "./activity.service.js";
 
 export class RSVPService {

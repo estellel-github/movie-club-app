@@ -1,7 +1,7 @@
-import { AppDataSource } from "../config/database.js";
-import type { ActivityType } from "../models/activity.entity.js";
-import { ActivityLog, activityTypes } from "../models/activity.entity.js";
-import { CustomError } from "../utils/customError.js";
+import { AppDataSource } from "@/config/database.js";
+import type { ActivityType } from "@/models/activity.entity.js";
+import { ActivityLog, activityTypes } from "@/models/activity.entity.js";
+import { CustomError } from "@/utils/customError.js";
 
 export class ActivityLogService {
   private activityLogRepo = AppDataSource.getRepository(ActivityLog);
