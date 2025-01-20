@@ -9,14 +9,16 @@ import type {
   RegisterResponse,
   LoginResponse,
 } from "../types/auth.types.js";
-import { userStatuses } from "../models/user.entity.js";
 import { CustomError } from "../utils/customError.js";
+import { UserService } from "./user.service.js";
 
 export class AuthService {
   private userRepo: Repository<User>;
+  private userService: UserService;
 
   constructor(userRepo: Repository<User>) {
     this.userRepo = userRepo;
+    this.userService = new UserService();
   }
 
   async register({
@@ -39,18 +41,15 @@ export class AuthService {
       throw new CustomError("Username already exists", 409); // Conflict
     }
 
-    const hashedPassword = await argon2.hash(password);
-    const user = this.userRepo.create({
+    // Create the user using UserService
+    const newUser = await this.userService.createUser({
       email,
-      password: hashedPassword,
+      password,
       intro_msg,
       username,
-      status: userStatuses[0], // Default status
     });
 
-    const savedUser = await this.userRepo.save(user);
-
-    const userWithoutPassword = excludeFields(savedUser, ["password"]);
+    const userWithoutPassword = excludeFields(newUser, ["password"]);
     return {
       message: "User registered successfully",
       user: userWithoutPassword,

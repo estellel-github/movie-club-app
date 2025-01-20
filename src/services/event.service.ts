@@ -2,12 +2,14 @@ import type { Repository } from "typeorm";
 import { AppDataSource } from "../config/database.js";
 import { Event } from "../models/event.entity.js";
 import { CustomError } from "../utils/customError.js";
-
+import { ActivityLogService } from "../services/activityLog.service.js";
 export class EventService {
   private eventRepo: Repository<Event>;
+  private activityLogService: ActivityLogService;
 
   constructor() {
     this.eventRepo = AppDataSource.getRepository(Event);
+    this.activityLogService = new ActivityLogService();
   }
 
   async getAllEvents(): Promise<Event[]> {
@@ -39,7 +41,14 @@ export class EventService {
   async createEvent(data: Partial<Event>): Promise<Event> {
     try {
       const event = this.eventRepo.create(data);
-      return await this.eventRepo.save(event);
+      const savedEvent = await this.eventRepo.save(event);
+
+      await this.activityLogService.logEventCreated(
+        savedEvent.event_id,
+        savedEvent.title,
+      );
+
+      return savedEvent;
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -56,7 +65,15 @@ export class EventService {
       }
 
       Object.assign(event, data);
-      return await this.eventRepo.save(event);
+      const updatedEvent = await this.eventRepo.save(event);
+
+      await this.activityLogService.logEventUpdated(
+        updatedEvent.event_id,
+        updatedEvent.title,
+      );
+
+      // Later, optionally, track which fields were changed to include in the response
+      return updatedEvent;
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;

@@ -2,12 +2,15 @@ import type { Repository } from "typeorm";
 import { AppDataSource } from "../config/database.js";
 import { Movie } from "../models/movie.entity.js";
 import { CustomError } from "../utils/customError.js";
+import { ActivityLogService } from "../services/activityLog.service.js"; // Import ActivityLogService
 
 export class MovieService {
   private movieRepo: Repository<Movie>;
+  private activityLogService: ActivityLogService; // Instance of ActivityLogService
 
   constructor() {
     this.movieRepo = AppDataSource.getRepository(Movie);
+    this.activityLogService = new ActivityLogService(); // Initialize ActivityLogService
   }
 
   async getAllMovies(): Promise<Movie[]> {
@@ -43,7 +46,14 @@ export class MovieService {
         ...data,
         added_by_user_id: user_id,
       });
-      return await this.movieRepo.save(movie);
+      const savedMovie = await this.movieRepo.save(movie);
+
+      await this.activityLogService.logMovieCreated(
+        savedMovie.movie_id,
+        savedMovie.title,
+      );
+
+      return savedMovie;
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;

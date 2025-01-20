@@ -2,12 +2,15 @@ import type { Repository } from "typeorm";
 import { AppDataSource } from "../config/database.js";
 import { Comment } from "../models/comment.entity.js";
 import { CustomError } from "../utils/customError.js";
+import { ActivityLogService } from "../services/activityLog.service.js"; // Import ActivityLogService
 
 export class CommentService {
   private commentRepo: Repository<Comment>;
+  private activityLogService: ActivityLogService;
 
   constructor() {
     this.commentRepo = AppDataSource.getRepository(Comment);
+    this.activityLogService = new ActivityLogService();
   }
 
   async getCommentsByEvent(event_id: string): Promise<Comment[]> {
@@ -26,12 +29,20 @@ export class CommentService {
   async createComment(data: Partial<Comment>): Promise<Comment> {
     try {
       const comment = this.commentRepo.create(data);
-      return await this.commentRepo.save(comment);
+      const savedComment = await this.commentRepo.save(comment);
+
+      await this.activityLogService.logCommentAdded(
+        savedComment.event_id,
+        savedComment.user_id,
+        savedComment.content,
+      );
+
+      return savedComment;
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       }
-      throw new CustomError("Failed to update comment", 500);
+      throw new CustomError("Failed to create comment", 500);
     }
   }
 
@@ -48,7 +59,9 @@ export class CommentService {
       }
 
       comment.content = content;
-      return await this.commentRepo.save(comment);
+      const updatedComment = await this.commentRepo.save(comment);
+
+      return updatedComment;
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -64,6 +77,8 @@ export class CommentService {
       if (!comment) {
         throw new CustomError("Comment not found or unauthorized", 404);
       }
+
+      // Later, optionally, log the comment deletion activity (if needed)
 
       await this.commentRepo.delete(comment_id);
     } catch (error) {

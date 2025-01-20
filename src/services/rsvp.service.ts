@@ -6,14 +6,17 @@ import { CustomError } from "../utils/customError.js";
 import type { RSVPStatus } from "../models/rsvp.entity.js";
 import { rsvpStatuses } from "../models/rsvp.entity.js";
 import { rsvpQueue } from "../queues/rsvpQueue.js";
+import { ActivityLogService } from "../services/activityLog.service.js";
 
 export class RSVPService {
   private rsvpRepo: Repository<RSVP>;
   private eventRepo: Repository<Event>;
+  private activityLogService: ActivityLogService;
 
   constructor() {
     this.rsvpRepo = AppDataSource.getRepository(RSVP);
     this.eventRepo = AppDataSource.getRepository(Event);
+    this.activityLogService = new ActivityLogService();
   }
 
   async createRSVP(event_id: string, user_id: string): Promise<RSVP> {
@@ -38,8 +41,8 @@ export class RSVPService {
       // Determine status and priority
       const status: RSVPStatus =
         attendeeCount >= event.max_attendees
-          ? rsvpStatuses[1]
-          : rsvpStatuses[0];
+          ? rsvpStatuses[1] // "waitlisted"
+          : rsvpStatuses[0]; // "going"
       const priority = attendeeCount + 1;
 
       const rsvp = this.rsvpRepo.create({
@@ -51,7 +54,8 @@ export class RSVPService {
 
       await this.rsvpRepo.save(rsvp);
 
-      // Add a job to process the waitlist when an RSVP is created
+      await this.activityLogService.logRSVPUpdate(event_id, user_id, status);
+
       await rsvpQueue.add("processWaitlist", { event_id });
 
       return rsvp;
@@ -87,7 +91,8 @@ export class RSVPService {
       const updatedRSVP = await this.rsvpRepo.save(rsvp);
 
       if (previousStatus !== status) {
-        const { event_id } = rsvp;
+        const { event_id, user_id } = rsvp;
+        await this.activityLogService.logRSVPUpdate(event_id, user_id, status);
         await rsvpQueue.add("processWaitlist", { event_id });
       }
 
@@ -123,9 +128,16 @@ export class RSVPService {
 
     // Move waitlisted users to "going"
     for (const user of waitlistedUsers) {
-      user.status = rsvpStatuses[0];
+      user.status = rsvpStatuses[0]; // "going"
       await this.rsvpRepo.save(user);
       console.log(`User ${user.user_id} moved to` + rsvpStatuses[0]);
+
+      // Log the movement from waitlisted to going
+      await this.activityLogService.logRSVPUpdate(
+        event_id,
+        user.user_id,
+        rsvpStatuses[0],
+      );
     }
   }
 }
