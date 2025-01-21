@@ -1,15 +1,10 @@
 import { AppDataSource } from "@/config/database.js";
 import type { ActivityType } from "@/models/activity.entity.js";
 import { ActivityLog, activityTypes } from "@/models/activity.entity.js";
-import { activityLogQueue } from "@/queues/activityLogQueue.js";
 import { CustomError } from "@/utils/customError.js";
 
 export class ActivityLogService {
   private activityLogRepo = AppDataSource.getRepository(ActivityLog);
-
-  async saveActivityLog(activityLog: ActivityLog): Promise<void> {
-    await this.activityLogRepo.save(activityLog);
-  }
 
   async logActivity(
     type: ActivityType,
@@ -17,19 +12,21 @@ export class ActivityLogService {
     user_id?: string,
     event_id?: string,
   ): Promise<void> {
-    try {
-      await activityLogQueue.add("logActivity", {
-        type,
-        details,
-        user_id,
-        event_id,
-      });
-    } catch (error) {
-      if (error instanceof CustomError) {
-        throw error;
-      }
-      throw new CustomError("Failed to log activity", 500);
+    const activityLog = this.activityLogRepo.create({
+      type,
+      details,
+      user_id: user_id || null,
+      event_id: event_id || null,
+      created_at: new Date(),
+    });
+
+    await this.activityLogRepo.save(activityLog);
+  }
+  catch(error: any) {
+    if (error instanceof CustomError) {
+      throw error;
     }
+    throw new CustomError("Failed to log activity", 500);
   }
 
   async logUserJoin(userId: string, userName: string): Promise<void> {

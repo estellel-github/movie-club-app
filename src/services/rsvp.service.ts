@@ -5,7 +5,6 @@ import { Event } from "@/models/event.entity.js";
 import { CustomError } from "@/utils/customError.js";
 import type { RSVPStatus } from "@/models/rsvp.entity.js";
 import { rsvpStatuses } from "@/models/rsvp.entity.js";
-import { rsvpQueue } from "@/queues/rsvpQueue.js";
 import { ActivityLogService } from "@/services/activity.service.js";
 
 export class RSVPService {
@@ -56,7 +55,7 @@ export class RSVPService {
 
       await this.activityLogService.logRSVPUpdate(event_id, user_id, status);
 
-      await rsvpQueue.add("processWaitlist", { event_id });
+      await this.processWaitlistForEvent(event_id);
 
       return rsvp;
     } catch (error) {
@@ -78,7 +77,6 @@ export class RSVPService {
     }
   }
 
-  // Fetch an RSVP by its ID
   async getRSVPById(rsvp_id: string): Promise<RSVP | null> {
     return await this.rsvpRepo.findOneBy({ rsvp_id });
   }
@@ -98,7 +96,7 @@ export class RSVPService {
       if (previousStatus !== status) {
         const { event_id, user_id } = rsvp;
         await this.activityLogService.logRSVPUpdate(event_id, user_id, status);
-        await rsvpQueue.add("processWaitlist", { event_id });
+        await this.processWaitlistForEvent(event_id);
       }
 
       return updatedRSVP;
@@ -122,7 +120,8 @@ export class RSVPService {
     });
 
     const availableSpots = event.max_attendees - attendeeCount;
-    if (availableSpots <= 0) return; // No spots available, no action needed
+    // No spots available, no action needed
+    if (availableSpots <= 0) return;
 
     // Get the top-priority waitlisted users
     const waitlistedUsers = await this.rsvpRepo.find({
