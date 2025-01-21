@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 
+// Requires rechecking
 const envFile = (() => {
   switch (process.env.NODE_ENV) {
     case "production":
