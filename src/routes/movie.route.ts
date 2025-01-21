@@ -10,13 +10,14 @@ import {
 import { validate } from "@/middleware/validation.middleware.js";
 import {
   createMovieSchema,
+  movieFilterSchema,
   updateMovieSchema,
 } from "@/validators/movie.validator.js";
 import { authorize } from "@/middleware/permissions.middleware.js";
 
 const router = Router();
 
-router.get("/", getAllMovies);
+router.get("/", validate(movieFilterSchema), getAllMovies);
 router.get("/:id", getMovieById);
 
 router.post(

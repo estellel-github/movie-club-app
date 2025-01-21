@@ -10,11 +10,37 @@ export const getAllMovies = async (
   next: NextFunction,
 ) => {
   try {
-    const movies = await movieService.getAllMovies();
-    if (!movies || movies.length === 0) {
-      throw new CustomError("No movies found", 404);
-    }
-    res.status(200).json(movies);
+    const {
+      page = 1,
+      limit = 10,
+      title,
+      director,
+      genre,
+      language,
+      releaseYearStart,
+      releaseYearEnd,
+      runtimeMin,
+      runtimeMax,
+    } = req.query;
+
+    const result = await movieService.getMoviesWithFilters(
+      Number(page),
+      Number(limit),
+      {
+        title: title as string,
+        director: director as string,
+        genre: genre as string,
+        language: language as string,
+        releaseYearStart: releaseYearStart
+          ? Number(releaseYearStart)
+          : undefined,
+        releaseYearEnd: releaseYearEnd ? Number(releaseYearEnd) : undefined,
+        runtimeMin: runtimeMin ? Number(runtimeMin) : undefined,
+        runtimeMax: runtimeMax ? Number(runtimeMax) : undefined,
+      },
+    );
+
+    res.status(200).json(result);
   } catch (error) {
     next(
       error instanceof CustomError

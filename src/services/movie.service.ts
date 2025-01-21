@@ -1,16 +1,17 @@
-import type { Repository } from "typeorm";
+import { Between, Like } from "typeorm";
+import type { Repository, FindOptionsWhere } from "typeorm";
 import { AppDataSource } from "@/config/database.js";
 import { Movie } from "@/models/movie.entity.js";
 import { CustomError } from "@/utils/customError.js";
-import { ActivityLogService } from "@/services/activity.service.js"; // Import ActivityLogService
+import { ActivityLogService } from "@/services/activity.service.js";
 
 export class MovieService {
   private movieRepo: Repository<Movie>;
-  private activityLogService: ActivityLogService; // Instance of ActivityLogService
+  private activityLogService: ActivityLogService;
 
   constructor() {
     this.movieRepo = AppDataSource.getRepository(Movie);
-    this.activityLogService = new ActivityLogService(); // Initialize ActivityLogService
+    this.activityLogService = new ActivityLogService();
   }
 
   async getAllMovies(): Promise<Movie[]> {
@@ -37,6 +38,65 @@ export class MovieService {
         throw error;
       }
       throw new CustomError("Failed to retrieve movie", 500);
+    }
+  }
+
+  async getMoviesWithFilters(
+    page: number,
+    limit: number,
+    filters: {
+      title?: string;
+      director?: string;
+      genre?: string;
+      language?: string;
+      releaseYearStart?: number;
+      releaseYearEnd?: number;
+      runtimeMin?: number;
+      runtimeMax?: number;
+    },
+  ) {
+    try {
+      const where: FindOptionsWhere<Movie> = {};
+
+      // Filters
+      if (filters.title) {
+        where.title = Like(`%${filters.title}%`);
+      }
+      if (filters.director) {
+        where.director = Like(`%${filters.director}%`);
+      }
+      if (filters.genre) {
+        where.genre = Like(`%${filters.genre}%`);
+      }
+      if (filters.language) {
+        where.language = Like(`%${filters.language}%`);
+      }
+      if (filters.releaseYearStart || filters.releaseYearEnd) {
+        where.release_year = Between(
+          filters.releaseYearStart || 1900, // Default to earliest possible year
+          filters.releaseYearEnd || new Date().getFullYear(), // Default to current year
+        );
+      }
+      if (filters.runtimeMin || filters.runtimeMax) {
+        where.runtime_minutes = Between(
+          filters.runtimeMin || 1, // Default to minimum runtime
+          filters.runtimeMax || 1000, // Default to maximum runtime
+        );
+      }
+
+      // Query with pagination
+      const [movies, total] = await this.movieRepo.findAndCount({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+
+      return { movies, total, page, limit };
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new CustomError("Failed to fetch movies with filters", 500);
     }
   }
 

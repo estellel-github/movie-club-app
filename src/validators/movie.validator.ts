@@ -36,3 +36,31 @@ export const createMovieSchema = baseMovieSchema;
 
 // Update Movie schema (optional fields)
 export const updateMovieSchema = baseMovieSchema.partial();
+
+export const movieFilterSchema = z.object({
+  page: z.string().regex(/^\d+$/, "Page must be a positive integer").optional(),
+  limit: z
+    .string()
+    .regex(/^\d+$/, "Limit must be a positive integer")
+    .optional(),
+  title: z.string().optional(),
+  director: z.string().optional(),
+  genre: z.string().optional(),
+  language: z.string().optional(),
+  releaseYearStart: z
+    .string()
+    .regex(/^\d+$/, "Release year must be a valid number")
+    .optional(),
+  releaseYearEnd: z
+    .string()
+    .regex(/^\d+$/, "Release year must be a valid number")
+    .optional(),
+  runtimeMin: z
+    .string()
+    .regex(/^\d+$/, "Runtime must be a valid number")
+    .optional(),
+  runtimeMax: z
+    .string()
+    .regex(/^\d+$/, "Runtime must be a valid number")
+    .optional(),
+});
