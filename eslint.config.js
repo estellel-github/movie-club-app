@@ -2,6 +2,7 @@ import { defineConfig } from "eslint-define-config";
 import eslintPluginPrettier from "eslint-plugin-prettier";
 import eslintPluginImport from "eslint-plugin-import";
 import eslintPluginTypescript from "@typescript-eslint/eslint-plugin";
+import noRelativeImportPaths from "eslint-plugin-no-relative-import-paths";
 import parserTypescript from "@typescript-eslint/parser";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -26,6 +27,7 @@ export default defineConfig([
       },
     },
     plugins: {
+      "no-relative-import-paths": noRelativeImportPaths,
       "@typescript-eslint": eslintPluginTypescript,
       import: eslintPluginImport,
       prettier: eslintPluginPrettier,
@@ -45,6 +47,11 @@ export default defineConfig([
       "import/order": "off",
 
       "prettier/prettier": "error",
+
+      "no-relative-import-paths/no-relative-import-paths": [
+        "warn",
+        { allowSameFolder: false, rootDir: "src", prefix: "@" },
+      ],
     },
     settings: {
       "import/resolver": {
