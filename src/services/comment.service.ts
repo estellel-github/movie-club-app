@@ -1,9 +1,9 @@
 import type { Repository } from "typeorm";
 import { AppDataSource } from "@/config/database.js";
 import { Comment } from "@/models/comment.entity.js";
-import { CustomError } from "../utils/customError.js";
-import { ActivityLogService } from "./activity.service.js"; // Import ActivityLogService
-import { UserService } from "./user.service.js";
+import { CustomError } from "@/utils/customError.js";
+import { ActivityLogService } from "@/services/activity.service.js";
+import { UserService } from "@/services/user.service.js";
 
 const userService = new UserService();
 
@@ -19,7 +19,11 @@ export class CommentService {
   async getCommentsByEvent(event_id: string): Promise<Comment[]> {
     try {
       const comments = await this.commentRepo.find({ where: { event_id } });
-      if (!comments || comments.length === 0) throw new CustomError("No comments found for this event or event id is not valid", 404);
+      if (!comments || comments.length === 0)
+        throw new CustomError(
+          "No comments found for this event or event id is not valid",
+          404,
+        );
       return comments;
     } catch (error) {
       if (error instanceof CustomError) {
@@ -63,7 +67,10 @@ export class CommentService {
 
       // Check if the authenticated user is the owner of the comment
       if (comment.user_id !== user_id) {
-        throw new CustomError("You are not authorized to update this comment", 403); // Forbidden
+        throw new CustomError(
+          "You are not authorized to update this comment",
+          403,
+        ); // Forbidden
       }
 
       comment.content = content;
@@ -89,7 +96,10 @@ export class CommentService {
 
       // Check if the authenticated user is the owner or an admin
       if (comment.user_id !== user_id && user.role !== "admin") {
-        throw new CustomError("You are not authorized to delete this comment", 403); // Forbidden
+        throw new CustomError(
+          "You are not authorized to delete this comment",
+          403,
+        ); // Forbidden
       }
 
       // Later, optionally, log the comment deletion activity (if needed)

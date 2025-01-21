@@ -62,7 +62,7 @@ export class UserService {
       // Log the "User Joined" activity after successful user creation
       await this.activityLogService.logUserJoin(
         savedUser.user_id,
-        savedUser.username
+        savedUser.username,
       );
 
       return savedUser;
@@ -94,12 +94,15 @@ export class UserService {
     user_id: string,
     data: Partial<User>,
     requestingUserId: string,
-    role: string
+    role: string,
   ): Promise<Partial<User>> {
     try {
       // Ensure the user is the one trying to update their profile or the requester is an admin
       if (user_id !== requestingUserId && role !== "admin") {
-        throw new CustomError("Unauthorized to update this user's profile", 403); // Forbidden
+        throw new CustomError(
+          "Unauthorized to update this user's profile",
+          403,
+        ); // Forbidden
       }
 
       const user = await this.getUserById(user_id);
@@ -119,11 +122,18 @@ export class UserService {
   }
 
   // Delete user account (Only the user or admin can delete)
-  async deleteUser(user_id: string, requestingUserId: string, role: string): Promise<void> {
+  async deleteUser(
+    user_id: string,
+    requestingUserId: string,
+    role: string,
+  ): Promise<void> {
     try {
       // Ensure the user is the one trying to delete their account or the requester is an admin
       if (user_id !== requestingUserId && role !== "admin") {
-        throw new CustomError("Unauthorized to delete this user's account", 403); // Forbidden
+        throw new CustomError(
+          "Unauthorized to delete this user's account",
+          403,
+        ); // Forbidden
       }
 
       const result = await this.userRepo.delete(user_id);

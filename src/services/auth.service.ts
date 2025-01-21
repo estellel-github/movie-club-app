@@ -8,7 +8,7 @@ import type {
   LoginResponse,
 } from "@/types/auth.types.js";
 import { CustomError } from "@/utils/customError.js";
-import { UserService } from "./user.service.js";
+import { UserService } from "@/services/user.service.js";
 
 export class AuthService {
   private userService: UserService;

@@ -6,7 +6,7 @@ import { CustomError } from "@/utils/customError.js";
 import type { RSVPStatus } from "@/models/rsvp.entity.js";
 import { rsvpStatuses } from "@/models/rsvp.entity.js";
 import { rsvpQueue } from "@/queues/rsvpQueue.js";
-import { ActivityLogService } from "./activity.service.js";
+import { ActivityLogService } from "@/services/activity.service.js";
 
 export class RSVPService {
   private rsvpRepo: Repository<RSVP>;

@@ -2,7 +2,7 @@ import type { Repository } from "typeorm";
 import { AppDataSource } from "@/config/database.js";
 import { Event } from "@/models/event.entity.js";
 import { CustomError } from "@/utils/customError.js";
-import { ActivityLogService } from "./activity.service.js";
+import { ActivityLogService } from "@/services/activity.service.js";
 export class EventService {
   private eventRepo: Repository<Event>;
   private activityLogService: ActivityLogService;

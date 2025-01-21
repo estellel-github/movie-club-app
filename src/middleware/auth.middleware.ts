@@ -1,12 +1,11 @@
-// middleware/auth.middleware.ts
-import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../utils/jwt.js"; // Absolute import
-import { CustomError } from "../utils/customError.js"; // Absolute import
+import type { Request, Response, NextFunction } from "express";
+import { verifyToken } from "@/utils/jwt.js";
+import { CustomError } from "@/utils/customError.js";
 
 export const authenticate = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const authHeader = req.headers.authorization;
@@ -36,14 +35,16 @@ export const authenticate = async (
         }
         next(new CustomError("Invalid token", 403)); // Forbidden
       }
-
     }
   } catch (error) {
     if (error instanceof CustomError) {
       next(error); // Pass the custom error to the error handler
     } else {
       next(
-        new CustomError("An unexpected error occurred during authentication", 500)
+        new CustomError(
+          "An unexpected error occurred during authentication",
+          500,
+        ),
       );
     }
   }

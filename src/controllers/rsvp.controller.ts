@@ -82,7 +82,6 @@ export const updateRSVP = async (
     // Proceed to update the RSVP if the user is authorized
     const updatedRSVP = await rsvpService.updateRSVP(rsvp_id, status);
     res.status(200).json(updatedRSVP);
-
   } catch (error) {
     next(
       error instanceof CustomError

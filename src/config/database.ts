@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { config } from "./env.js";
+import { config } from "@/config/env.js";
 
 import { User } from "@/models/user.entity.js";
 import { Movie } from "@/models/movie.entity.js";

@@ -2,7 +2,7 @@ import type { Repository } from "typeorm";
 import { AppDataSource } from "@/config/database.js";
 import { Movie } from "@/models/movie.entity.js";
 import { CustomError } from "@/utils/customError.js";
-import { ActivityLogService } from "./activity.service.js"; // Import ActivityLogService
+import { ActivityLogService } from "@/services/activity.service.js"; // Import ActivityLogService
 
 export class MovieService {
   private movieRepo: Repository<Movie>;

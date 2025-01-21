@@ -1,7 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { UserService } from "@/services/user.service.js";
 import { CustomError } from "@/utils/customError.js";
-import type { UpdateUserBody, UserRequest } from "@/types/express.js";
 import { excludeFields } from "@/utils/excludeFields.js";
 
 const userService = new UserService();
@@ -9,7 +8,7 @@ const userService = new UserService();
 export const getUserProfile = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { user_id: targetUserId } = req.params;
@@ -41,7 +40,7 @@ export const getUserProfile = async (
     next(
       error instanceof CustomError
         ? error
-        : new CustomError("Failed to retrieve user profile", 500)
+        : new CustomError("Failed to retrieve user profile", 500),
     );
   }
 };
@@ -49,7 +48,7 @@ export const getUserProfile = async (
 export const updateUserProfile = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { user_id: requestingUserId, role } = req.user!;
@@ -65,7 +64,7 @@ export const updateUserProfile = async (
       targetUserId,
       data,
       requestingUserId,
-      role
+      role,
     );
 
     res.status(200).json({
@@ -76,7 +75,7 @@ export const updateUserProfile = async (
     next(
       error instanceof CustomError
         ? error
-        : new CustomError("Failed to update user profile", 500)
+        : new CustomError("Failed to update user profile", 500),
     );
   }
 };
@@ -84,7 +83,7 @@ export const updateUserProfile = async (
 export const deleteUserAccount = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { user_id: requestingUserId, role } = req.user!;
@@ -102,7 +101,7 @@ export const deleteUserAccount = async (
     next(
       error instanceof CustomError
         ? error
-        : new CustomError("Failed to delete user account", 500)
+        : new CustomError("Failed to delete user account", 500),
     );
   }
 };
