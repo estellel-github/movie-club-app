@@ -3,13 +3,13 @@ import dotenv from "dotenv";
 const envFile = (() => {
   switch (process.env.NODE_ENV) {
     case "production":
-      return ".env.prod";
+      return ".env";
     case "test":
-      return ".env.test";
+      return ".env";
     case "local":
-      return ".env.local";
+      return ".env";
     default:
-      return ".env.dev";
+      return ".env";
   }
 })();
 

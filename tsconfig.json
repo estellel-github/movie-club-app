@@ -10,6 +10,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "isolatedModules": false,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./src",
@@ -17,6 +18,11 @@
       "@/*": ["*"] // Maps "@" to the "src" folder
     }
   },
-  "include": ["src/**/*.ts", "src/config/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*.ts",
+    "src/config/*",
+    "src/__tests__/",
+    "jest.config.cjs"
+  ],
+  "exclude": ["node_modules", "dist"]
 }

@@ -5,18 +5,19 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "clean": "rm -rf dist",
     "dev": "docker compose -f docker-compose.dev.yml up --build",
     "prod": "docker compose -f docker-compose.prod.yml up --build",
     "stop:dev": "docker compose -f docker-compose.dev.yml down --volumes",
     "stop:prod": "docker compose -f docker-compose.prod.yml down --volumes",
     "start:local": "NODE_ENV=local tsx src/index.ts",
-    "test": "jest --verbose",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test": "NODE_ENV=test jest --verbose",
+    "test:watch": "NODE_ENV=test jest --watch",
+    "test:coverage": "NODE_ENV=test jest --coverage",
     "build": "tsc",
     "migrate": "ts-node src/migrations/run.ts",
     "inspect": "docker inspect movieclub_dev_app | grep IPAddress",
-    "seed": "ts-node ./seed.ts"
+    "seed": "ts-node src/seed.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^9.4.0",
@@ -50,6 +51,7 @@
     "madge": "^8.0.0",
     "prettier": "^3.4.2",
     "supertest": "^7.0.0",
+    "supertest=": "link:@types/supertest=",
     "ts-jest": "^29.2.5",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.2",
