@@ -37,9 +37,39 @@ services:
     restart: on-failure:3
     ports:
       - "6379:6379"
-    command: ["redis-server", "--requirepass", "redis_pw_123"]
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
     environment:
-      - REDIS_PASSWORD=redis_pw_123
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+
+  activity_log_worker:
+    container_name: movieclub_activity_log_worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    depends_on:
+      - redis
+      - db
+    command: node dist/workers/activityLogWorker.js
+    restart: always
+
+  rsvp_worker:
+    container_name: movieclub_rsvp_worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    depends_on:
+      - redis
+      - db
+    command: node dist/workers/rsvpWorker.js
+    restart: always
 
 volumes:
   postgres_data_dev:
