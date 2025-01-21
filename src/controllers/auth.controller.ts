@@ -37,3 +37,34 @@ export const login = async (
     );
   }
 };
+
+export const generateResetToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      throw new CustomError("Email is required", 400);
+    }
+    const token = await authService.generateResetToken(email);
+    res.status(200).json({ message: "Reset token generated", token });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { reset_token, new_password } = req.body;
+    await authService.resetPassword(reset_token, new_password);
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    next(error);
+  }
+};

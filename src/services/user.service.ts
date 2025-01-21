@@ -6,6 +6,7 @@ import { CustomError } from "@/utils/customError.js";
 import argon2 from "argon2";
 import { userStatuses } from "@/models/user.entity.js";
 import { ActivityLogService } from "@/services/activity.service.js";
+import crypto from "crypto";
 
 export class UserService {
   private userRepo: Repository<User> = AppDataSource.getRepository(User);
@@ -16,7 +17,6 @@ export class UserService {
     this.activityLogService = new ActivityLogService();
   }
 
-  // Check if user exists by email or username
   async checkIfUserExists(email: string, username: string) {
     const existingEmail = await this.userRepo.findOneBy({ email });
     if (existingEmail) {
@@ -29,12 +29,10 @@ export class UserService {
     }
   }
 
-  // Find user by email
   async findUserByEmail(email: string): Promise<User | null> {
     return await this.userRepo.findOneBy({ email });
   }
 
-  // Create a new user
   async createUser({
     email,
     password,
@@ -89,7 +87,7 @@ export class UserService {
     }
   }
 
-  // Update user profile (Only the user or admin can update)
+  // (Only the user or admin can update)
   async updateUser(
     user_id: string,
     data: Partial<User>,
@@ -121,7 +119,7 @@ export class UserService {
     }
   }
 
-  // Delete user account (Only the user or admin can delete)
+  // (Only the user or admin can delete)
   async deleteUser(
     user_id: string,
     requestingUserId: string,
@@ -146,5 +144,42 @@ export class UserService {
       }
       throw new CustomError("Failed to delete user", 500);
     }
+  }
+
+  async generateResetToken(email: string): Promise<string> {
+    const user = await this.userRepo.findOneBy({ email });
+    if (!user) {
+      throw new CustomError("User not found", 404);
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const expires = new Date();
+    expires.setHours(expires.getHours() + 24); // Token valid for 24 hours
+
+    user.reset_token = resetToken;
+    user.reset_token_expires = expires;
+
+    await this.userRepo.save(user);
+    return resetToken;
+  }
+
+  async verifyResetToken(resetToken: string): Promise<User> {
+    const user = await this.userRepo.findOneBy({ reset_token: resetToken });
+    if (
+      !user ||
+      !user.reset_token_expires ||
+      user.reset_token_expires < new Date()
+    ) {
+      throw new CustomError("Invalid or expired reset token", 400);
+    }
+    return user;
+  }
+
+  async resetPassword(resetToken: string, newPassword: string): Promise<void> {
+    const user = await this.verifyResetToken(resetToken);
+    user.password = await argon2.hash(newPassword);
+    user.reset_token = null;
+    user.reset_token_expires = null;
+    await this.userRepo.save(user);
   }
 }

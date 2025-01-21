@@ -25,3 +25,8 @@ export const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
   password: z.string(),
 });
+
+export const resetPasswordSchema = z.object({
+  reset_token: z.string().min(1, "Reset token is required"),
+  new_password: strongPassword,
+});

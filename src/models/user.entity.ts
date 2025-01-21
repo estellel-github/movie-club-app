@@ -37,6 +37,12 @@ export class User {
   })
   status!: UserStatus;
 
+  @Column("text", { nullable: true })
+  reset_token!: string | null;
+
+  @Column("timestamp", { nullable: true })
+  reset_token_expires!: Date | null;
+
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at!: Date;
 

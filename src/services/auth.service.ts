@@ -47,4 +47,12 @@ export class AuthService {
     const token = generateToken({ user_id: user.user_id, role: user.role });
     return { token };
   }
+
+  async generateResetToken(email: string): Promise<string> {
+    return this.userService.generateResetToken(email);
+  }
+
+  async resetPassword(resetToken: string, newPassword: string): Promise<void> {
+    return this.userService.resetPassword(resetToken, newPassword);
+  }
 }
