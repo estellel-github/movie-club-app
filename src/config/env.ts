@@ -1,20 +1,6 @@
 import dotenv from "dotenv";
 
-// Requires rechecking
-const envFile = (() => {
-  switch (process.env.NODE_ENV) {
-    case "production":
-      return ".env";
-    case "test":
-      return ".env";
-    case "local":
-      return ".env";
-    default:
-      return ".env";
-  }
-})();
-
-dotenv.config({ path: envFile });
+dotenv.config();
 
 export const config = {
   port: process.env.PORT,
