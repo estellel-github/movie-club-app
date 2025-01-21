@@ -3,8 +3,6 @@ import dotenv from "dotenv";
 import { connectDB } from "@/config/database.js";
 import type { Server } from "http";
 import "reflect-metadata";
-import { checkRedisHealth } from "@/utils/redisHealthCheck.js";
-import { rsvpWorker } from "@/workers/rsvpWorker.js";
 import { errorHandler } from "@/middleware/errorHandler.middleware.js";
 
 import adminRoutes from "@/routes/admin.route.js";
@@ -21,11 +19,6 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-
-checkRedisHealth();
-
-// Explicitly reference the bullMQ worker to avoid the "unused import" warning
-rsvpWorker;
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
