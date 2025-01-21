@@ -10,11 +10,12 @@ import {
   loginSchema,
   resetPasswordSchema,
 } from "@/validators/auth.validator.js";
+import { loginRateLimiter } from "@/middleware/rateLimiter.js";
 
 const router = Router();
 
 router.post("/register", validate(registerSchema), register);
-router.post("/login", validate(loginSchema), login);
+router.post("/login", loginRateLimiter, validate(loginSchema), login);
 
 router.post("/reset-token", generateResetToken);
 router.post("/reset-password", validate(resetPasswordSchema), resetPassword);
