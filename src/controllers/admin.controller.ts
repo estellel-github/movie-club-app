@@ -13,6 +13,8 @@ export const suspendUser = async (
 ) => {
   try {
     const { userId } = req.params;
+    const { user_id: requestingUserId, role } = req.user!;
+
     const user = await userService.getUserById(userId);
 
     if (!user) {
@@ -23,9 +25,12 @@ export const suspendUser = async (
       throw new CustomError("User already suspended", 400);
     }
 
-    const updatedUser = await userService.updateUser(userId, {
-      status: "suspended",
-    });
+    const updatedUser = await userService.updateUser(
+      userId,
+      { status: "suspended" },
+      requestingUserId,
+      role,
+    );
 
     res.status(200).json({
       message: "User suspended successfully",
@@ -49,6 +54,7 @@ export const updateUserRole = async (
   try {
     const { userId } = req.params;
     const { role } = req.body;
+    const { user_id: requestingUserId, role: requesterRole } = req.user!;
 
     // Validate role
     if (!userRoles.includes(role)) {
@@ -61,7 +67,12 @@ export const updateUserRole = async (
       throw new CustomError("User not found", 404);
     }
 
-    const updatedUser = await userService.updateUser(userId, { role });
+    const updatedUser = await userService.updateUser(
+      userId,
+      { role },
+      requestingUserId,
+      requesterRole,
+    );
 
     res.status(200).json({
       message: "Role updated successfully",
