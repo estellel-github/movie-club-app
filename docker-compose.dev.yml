@@ -42,4 +42,4 @@ services:
       POSTGRES_DB: movieclub_test_db
     depends_on:
       - db
-    command: ["pnpm", "test"] # Runs your test suite
+    command: ["pnpm", "test"]

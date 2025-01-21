@@ -11,14 +11,18 @@
     "stop:dev": "docker compose -f docker-compose.dev.yml down --volumes",
     "stop:prod": "docker compose -f docker-compose.prod.yml down --volumes",
     "start:local": "NODE_ENV=local tsx src/index.ts",
+    "test": "mocha --require tsx 'src/**/*.test.ts'",
     "build": "tsc",
-    "migrate": "ts-node src/migrations/run.ts",
+    "migrate": "tsx src/migrations/run.ts",
     "inspect": "docker inspect movieclub_dev_app | grep IPAddress",
-    "seed": "ts-node src/seed.ts"
+    "seed": "tsx src/seed.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^9.4.0",
+    "@types/chai": "^5.0.1",
+    "@types/mocha": "^10.0.10",
     "argon2": "^0.41.1",
+    "chai": "^5.1.2",
     "dotenv": "^16.4.7",
     "eslint-define-config": "^2.1.0",
     "express": "^4.21.2",
@@ -44,6 +48,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "madge": "^8.0.0",
+    "mocha": "^11.0.1",
     "prettier": "^3.4.2",
     "supertest": "^7.0.0",
     "supertest=": "link:@types/supertest=",
