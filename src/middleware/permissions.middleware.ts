@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { CustomError } from "@/utils/customError.js";
-import type { UserRole } from "@/models/user.entity.js";
+import { CustomError } from "../utils/customError.js";
+import type { UserRole } from "../models/user.entity.js";
 
 export const authorize = (allowedRoles: UserRole[]) => {
   return (req: Request, res: Response, next: NextFunction) => {

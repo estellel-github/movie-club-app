@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { CommentService } from "@/services/comment.service.js";
-import { CustomError } from "@/utils/customError.js";
+import { CommentService } from "../services/comment.service.js";
+import { CustomError } from "../utils/customError.js";
 
 const commentService = new CommentService();
 

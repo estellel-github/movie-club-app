@@ -1,19 +1,20 @@
 import express from "express";
 import dotenv from "dotenv";
-import { connectDB } from "@/config/database.js";
+import { connectDB } from "./config/database.js";
 import type { Server } from "http";
 import "reflect-metadata";
-import { errorHandler } from "@/middleware/errorHandler.middleware.js";
+import { errorHandler } from "./middleware/errorHandler.middleware.js";
+import "module-alias/register";
 
-import adminRoutes from "@/routes/admin.route.js";
-import authRoutes from "@/routes/auth.route.js";
-import commentRoutes from "@/routes/comment.route.js";
-import eventRoutes from "@/routes/event.route.js";
-import feedRoutes from "@/routes/feed.route.js";
-import healthRoutes from "@/routes/health.route.js";
-import movieRoutes from "@/routes/movie.route.js";
-import rsvpRoutes from "@/routes/rsvp.route.js";
-import userRoutes from "@/routes/user.route.js";
+import adminRoutes from "./routes/admin.route.js";
+import authRoutes from "./routes/auth.route.js";
+import commentRoutes from "./routes/comment.route.js";
+import eventRoutes from "./routes/event.route.js";
+import feedRoutes from "./routes/feed.route.js";
+import healthRoutes from "./routes/health.route.js";
+import movieRoutes from "./routes/movie.route.js";
+import rsvpRoutes from "./routes/rsvp.route.js";
+import userRoutes from "./routes/user.route.js";
 
 dotenv.config();
 

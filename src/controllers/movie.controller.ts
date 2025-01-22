@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { MovieService } from "@/services/movie.service.js";
-import { CustomError } from "@/utils/customError.js";
+import { MovieService } from "../services/movie.service.js";
+import { CustomError } from "../utils/customError.js";
 
 const movieService = new MovieService();
 

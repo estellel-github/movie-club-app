@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import { AuthService } from "@/services/auth.service.js";
-import { CustomError } from "@/utils/customError.js";
+import { AuthService } from "../services/auth.service.js";
+import { CustomError } from "../utils/customError.js";
 
 const authService = new AuthService();
 

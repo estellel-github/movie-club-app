@@ -1,9 +1,9 @@
 import { Between, Like } from "typeorm";
 import type { Repository, FindOptionsWhere } from "typeorm";
-import { AppDataSource } from "@/config/database.js";
-import { Movie } from "@/models/movie.entity.js";
-import { CustomError } from "@/utils/customError.js";
-import { ActivityLogService } from "@/services/activity.service.js";
+import { AppDataSource } from "../config/database.js";
+import { Movie } from "../models/movie.entity.js";
+import { CustomError } from "../utils/customError.js";
+import { ActivityLogService } from "../services/activity.service.js";
 
 export class MovieService {
   private movieRepo: Repository<Movie>;

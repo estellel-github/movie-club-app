@@ -48,10 +48,10 @@ export default defineConfig([
 
       "prettier/prettier": "error",
 
-      "no-relative-import-paths/no-relative-import-paths": [
-        "warn",
-        { allowSameFolder: false, rootDir: "src", prefix: "@" },
-      ],
+      // "no-relative-import-paths/no-relative-import-paths": [
+      //   "warn",
+      //   { allowSameFolder: false, rootDir: "src", prefix: "@" },
+      // ],
     },
     settings: {
       "import/resolver": {

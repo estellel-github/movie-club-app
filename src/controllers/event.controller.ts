@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { EventService } from "@/services/event.service.js";
-import { CustomError } from "@/utils/customError.js";
+import { EventService } from "../services/event.service.js";
+import { CustomError } from "../utils/customError.js";
 
 const eventService = new EventService();
 

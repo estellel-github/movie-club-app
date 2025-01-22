@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { authenticate } from "@/middleware/auth.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
 import {
   getUserProfile,
   updateUserProfile,
   deleteUserAccount,
-} from "@/controllers/user.controller.js";
+} from "../controllers/user.controller.js";
 import { validate } from "middleware/validation.middleware.js";
 import {
   updateUserProfileSchema,

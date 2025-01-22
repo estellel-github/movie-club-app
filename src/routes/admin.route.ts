@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { authenticate } from "@/middleware/auth.middleware.js";
-import { suspendUser, updateUserRole } from "@/controllers/admin.controller.js";
-import { validate } from "@/middleware/validation.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
+import { suspendUser, updateUserRole } from "../controllers/admin.controller.js";
+import { validate } from "../middleware/validation.middleware.js";
 import {
   updateRoleSchema,
   userIdSchema,
-} from "@/validators/admin.validator.js";
-import { authorize } from "@/middleware/permissions.middleware.js";
+} from "../validators/admin.validator.js";
+import { authorize } from "../middleware/permissions.middleware.js";
 
 const router = Router();
 

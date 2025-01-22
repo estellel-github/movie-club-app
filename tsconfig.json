@@ -15,9 +15,12 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"] // Maps "@" to the "src" folder
+      "../*": ["*"] // Maps "@" to the "src" folder
     }
   },
-  "include": ["src/**/*.ts", "src/config/*", "src/__tests__/"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts", "src/config/*", "src/__tests__/**/*.ts"],
+  "exclude": ["node_modules", "dist"],
+  "_moduleAliases": {
+    "@": "dist"
+  }
 }

@@ -1,19 +1,19 @@
 import { Router } from "express";
-import { authenticate } from "@/middleware/auth.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
 import {
   getAllMovies,
   getMovieById,
   createMovie,
   updateMovie,
   deleteMovie,
-} from "@/controllers/movie.controller.js";
-import { validate } from "@/middleware/validation.middleware.js";
+} from "../controllers/movie.controller.js";
+import { validate } from "../middleware/validation.middleware.js";
 import {
   createMovieSchema,
   movieFilterSchema,
   updateMovieSchema,
-} from "@/validators/movie.validator.js";
-import { authorize } from "@/middleware/permissions.middleware.js";
+} from "../validators/movie.validator.js";
+import { authorize } from "../middleware/permissions.middleware.js";
 
 const router = Router();
 

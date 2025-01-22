@@ -1,11 +1,11 @@
 import { faker } from "@faker-js/faker";
 import argon2 from "argon2";
-import { AppDataSource } from "@/config/database.js";
-import { User } from "@/models/user.entity.js";
-import { Movie } from "@/models/movie.entity.js";
-import { Event } from "@/models/event.entity.js";
-import { Comment } from "@/models/comment.entity.js";
-import { rsvpStatuses, RSVP } from "@/models/rsvp.entity.js";
+import { AppDataSource } from "./database.js";
+import { User } from "../models/user.entity.js";
+import { Movie } from "../models/movie.entity.js";
+import { Event } from "../models/event.entity.js";
+import { Comment } from "../models/comment.entity.js";
+import { rsvpStatuses, RSVP } from "../models/rsvp.entity.js";
 
 const seedDatabase = async () => {
   try {

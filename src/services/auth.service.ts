@@ -1,14 +1,14 @@
 import argon2 from "argon2";
-import { generateToken } from "@/utils/jwt.js";
-import { excludeFields } from "@/utils/excludeFields.js";
+import { generateToken } from "../utils/jwt.js";
+import { excludeFields } from "../utils/excludeFields.js";
 import type {
   RegisterRequest,
   LoginRequest,
   RegisterResponse,
   LoginResponse,
-} from "@/types/auth.types.js";
-import { CustomError } from "@/utils/customError.js";
-import { UserService } from "@/services/user.service.js";
+} from "../types/auth.types.js";
+import { CustomError } from "../utils/customError.js";
+import { UserService } from "../services/user.service.js";
 
 export class AuthService {
   private userService: UserService;

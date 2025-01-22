@@ -1,6 +1,6 @@
-import { AppDataSource } from "@/config/database.js";
-import { ActivityLog } from "@/models/activity.entity.js";
-import { CustomError } from "@/utils/customError.js";
+import { AppDataSource } from "../config/database.js";
+import { ActivityLog } from "../models/activity.entity.js";
+import { CustomError } from "../utils/customError.js";
 
 export class FeedService {
   private activityLogRepo = AppDataSource.getRepository(ActivityLog);

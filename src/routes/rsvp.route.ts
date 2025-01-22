@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { authenticate } from "@/middleware/auth.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
 import {
   createRSVP,
   getRSVPsForEvent,
   updateRSVP,
-} from "@/controllers/rsvp.controller.js";
+} from "../controllers/rsvp.controller.js";
 
 const router = Router();
 

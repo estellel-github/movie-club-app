@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { AppDataSource } from "@/config/database.js";
-import { Event } from "@/models/event.entity.js";
-import { User } from "@/models/user.entity.js";
-import { activityTypes } from "@/models/activity.entity.js";
+import { AppDataSource } from "../config/database.js";
+import { Event } from "../models/event.entity.js";
+import { User } from "../models/user.entity.js";
+import { activityTypes } from "../models/activity.entity.js";
 
 export const activityTypeSchema = z.enum(activityTypes, {
   message: "Invalid activity type",
