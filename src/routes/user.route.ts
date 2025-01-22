@@ -5,11 +5,11 @@ import {
   updateUserProfile,
   deleteUserAccount,
 } from "../controllers/user.controller.js";
-import { validate } from "middleware/validation.middleware.js";
+import { validate } from "../middleware/validation.middleware.js";
 import {
   updateUserProfileSchema,
   userIdParamSchema,
-} from "validators/user.validator.js";
+} from "../validators/user.validator.js";
 
 const router = Router();
 

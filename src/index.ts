@@ -4,7 +4,6 @@ import { connectDB } from "./config/database.js";
 import type { Server } from "http";
 import "reflect-metadata";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
-import "module-alias/register";
 
 import adminRoutes from "./routes/admin.route.js";
 import authRoutes from "./routes/auth.route.js";
