@@ -6,13 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3002:3000"
+      - "3000:3000"
     env_file:
-      - .env
-    environment:
-      NODE_ENV: production
-      PORT: ${PROD_PORT}
-      POSTGRES_HOST: movieclub_prod_db
+      - .env.prod
     depends_on:
       db:
         condition: service_healthy
@@ -22,13 +18,9 @@ services:
     image: postgres:17-alpine
     restart: on-failure:3
     ports:
-      - "5434:5432"
+      - "5432:5432"
     env_file:
-      - .env
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      - .env.prod
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data
     healthcheck:
@@ -38,4 +30,4 @@ services:
       retries: 5
 
 volumes:
-  postgres_data_prod:
+  postgres_data:

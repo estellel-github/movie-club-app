@@ -17,4 +17,4 @@ RUN pnpm run build
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "/usr/src/app/wait-for-it.sh movieclub_dev_db 5432 -- node dist/config/seed.js && pnpm start"]
+CMD ["sh", "-c", "/usr/src/app/wait-for-it.sh ${POSTGRES_HOST} 5432 -- node dist/config/seed.js && pnpm start"]

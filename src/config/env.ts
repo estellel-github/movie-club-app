@@ -1,9 +1,33 @@
 import dotenv from "dotenv";
 
-dotenv.config();
+const envFile =
+  process.env.NODE_ENV === "production"
+    ? ".env.prod"
+    : process.env.NODE_ENV === "test"
+      ? ".env.test"
+      : ".env";
+
+console.log(`🌱 Using environment config: ${envFile}`);
+
+const result = dotenv.config({ path: envFile });
+if (result.error) {
+  console.warn(`⚠️  Failed to load environment file: ${envFile}`);
+}
+
+const requiredVars = [
+  "POSTGRES_HOST",
+  "POSTGRES_USER",
+  "POSTGRES_PASSWORD",
+  "JWT_SECRET",
+];
+requiredVars.forEach((key) => {
+  if (!process.env[key]) {
+    throw new Error(`❌ Missing required environment variable: ${key}`);
+  }
+});
 
 export const config = {
-  port: process.env.PORT,
+  port: process.env.PORT || 3000,
   db: {
     host: process.env.POSTGRES_HOST,
     port: Number(process.env.POSTGRES_PORT),
