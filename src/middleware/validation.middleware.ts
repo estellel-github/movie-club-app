@@ -5,16 +5,16 @@ import { CustomError } from "../utils/customError.js";
 export const validate =
   (schema: ZodSchema) => (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse({
-        body: req.body,
-        query: req.query,
-        params: req.params,
-      });
+      console.log("Before Validation:", req.body); // Debug
+      schema.parse(req.body);
+      console.log("Validation Passed");
       next();
     } catch (err: unknown) {
       if (err instanceof Error) {
+        console.error("Validation Error:", err); // Debug
         next(new CustomError(err.message, 400));
       } else {
+        console.error("Validation Error:", err); // Debug
         next(new CustomError("Validation Error", 400));
       }
     }
