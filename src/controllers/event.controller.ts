@@ -10,8 +10,28 @@ export const getAllEvents = async (
   next: NextFunction,
 ) => {
   try {
-    const events = await eventService.getAllEvents();
-    res.status(200).json(events);
+    console.log("Incoming Query Parameters:", req.query);
+    const {
+      page = "1",
+      limit = "10",
+      title,
+      dateStart,
+      dateEnd,
+      location,
+    } = req.query;
+
+    const result = await eventService.getEventsWithFilters(
+      parseInt(page as string, 10),
+      parseInt(limit as string, 10),
+      {
+        title: title as string,
+        dateStart: dateStart as string,
+        dateEnd: dateEnd as string,
+        location: location as string,
+      },
+    );
+
+    res.status(200).json(result);
   } catch (error) {
     next(
       error instanceof CustomError

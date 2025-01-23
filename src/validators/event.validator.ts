@@ -27,3 +27,25 @@ export const createEventSchema = baseEventSchema;
 
 // Update Event schema (optional fields)
 export const updateEventSchema = baseEventSchema.partial();
+
+// Regex for strict date validation (YYYY-MM-DD format)
+const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+// Filter Event schema
+export const eventFilterSchema = z.object({
+  page: z.string().regex(/^\d+$/, "Page must be a positive integer").optional(),
+  limit: z
+    .string()
+    .regex(/^\d+$/, "Limit must be a positive integer")
+    .optional(),
+  title: z.string().optional(),
+  dateStart: z
+    .string()
+    .regex(isoDateRegex, "Date must be in YYYY-MM-DD format")
+    .optional(),
+  dateEnd: z
+    .string()
+    .regex(isoDateRegex, "Date must be in YYYY-MM-DD format")
+    .optional(),
+  location: z.string().optional(),
+});

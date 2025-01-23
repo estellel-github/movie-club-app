@@ -1,8 +1,10 @@
-import type { Repository } from "typeorm";
+import type { Repository, FindOptionsWhere } from "typeorm";
+import { Like, Between } from "typeorm";
 import { AppDataSource } from "../config/database.js";
 import { Event } from "../models/event.entity.js";
 import { CustomError } from "../utils/customError.js";
 import { ActivityLogService } from "../services/activity.service.js";
+
 export class EventService {
   private eventRepo: Repository<Event>;
   private activityLogService: ActivityLogService;
@@ -12,14 +14,45 @@ export class EventService {
     this.activityLogService = new ActivityLogService();
   }
 
-  async getAllEvents(): Promise<Event[]> {
+  async getEventsWithFilters(
+    page: number,
+    limit: number,
+    filters: {
+      title?: string;
+      dateStart?: string;
+      dateEnd?: string;
+      location?: string;
+    },
+  ): Promise<{ events: Event[]; total: number; page: number; limit: number }> {
     try {
-      return await this.eventRepo.find();
+      const where: FindOptionsWhere<Event> = {};
+
+      if (filters.title) {
+        where.title = Like(`%${filters.title}%`);
+      }
+      if (filters.dateStart || filters.dateEnd) {
+        where.date = Between(
+          new Date(filters.dateStart || "1900-01-01"),
+          new Date(filters.dateEnd || new Date().toISOString()),
+        );
+      }
+      if (filters.location) {
+        where.location = Like(`%${filters.location}%`);
+      }
+
+      const [events, total] = await this.eventRepo.findAndCount({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        order: { date: "ASC" },
+      });
+
+      return { events, total, page, limit };
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       }
-      throw new CustomError("Failed to retrieve events", 500);
+      throw new CustomError("Failed to retrieve events with filters", 500);
     }
   }
 
