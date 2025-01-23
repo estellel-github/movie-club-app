@@ -4,21 +4,30 @@ import { CustomError } from "../utils/customError.js";
 
 const commentService = new CommentService();
 
-export const getCommentsByEvent = async (
+export const getComments = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const comments = await commentService.getCommentsByEvent(
-      req.params.eventId,
+    const { page = 1, limit = 10, post_id, user_id, search } = req.query;
+
+    const result = await commentService.getFilteredComments(
+      Number(page),
+      Number(limit),
+      {
+        event_id: post_id as string,
+        user_id: user_id as string,
+        search: search as string,
+      },
     );
-    res.status(200).json(comments);
+
+    res.status(200).json(result);
   } catch (error) {
     next(
       error instanceof CustomError
         ? error
-        : new CustomError("Failed to get comments", 500),
+        : new CustomError("Failed to retrieve comments", 500),
     );
   }
 };

@@ -13,8 +13,10 @@ import {
 
 const router = Router();
 
-router.post("/:id", validateBody(createRSVPSchema), authenticate, createRSVP);
 router.get("/:id", authenticate, getRSVPsForEvent);
+
+router.post("/:id", validateBody(createRSVPSchema), authenticate, createRSVP);
+
 router.patch("/:id", validateBody(updateRSVPSchema), authenticate, updateRSVP);
 
 export default router;

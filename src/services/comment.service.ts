@@ -1,9 +1,16 @@
-import type { Repository } from "typeorm";
+import type { Repository, FindOptionsWhere } from "typeorm";
 import { AppDataSource } from "../config/database.js";
 import { Comment } from "../models/comment.entity.js";
 import { CustomError } from "../utils/customError.js";
 import { ActivityLogService } from "../services/activity.service.js";
 import { UserService } from "../services/user.service.js";
+import { Like } from "typeorm";
+
+type CommentFilters = {
+  event_id?: string;
+  user_id?: string;
+  search?: string;
+};
 
 const userService = new UserService();
 
@@ -16,20 +23,50 @@ export class CommentService {
     this.activityLogService = new ActivityLogService();
   }
 
-  async getCommentsByEvent(event_id: string): Promise<Comment[]> {
+  // Fetch paginated and filtered comments
+  async getFilteredComments(
+    page: number,
+    limit: number,
+    filters: CommentFilters,
+  ): Promise<{
+    comments: Comment[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     try {
-      const comments = await this.commentRepo.find({ where: { event_id } });
-      if (!comments || comments.length === 0)
-        throw new CustomError(
-          "No comments found for this event or event id is not valid",
-          404,
-        );
-      return comments;
+      const where: FindOptionsWhere<Comment> = {};
+
+      // Apply filters
+      if (filters.event_id) {
+        where.event_id = filters.event_id;
+      }
+      if (filters.user_id) {
+        where.user_id = filters.user_id;
+      }
+      if (filters.search) {
+        where.content = Like(`%${filters.search}%`); // Search in the comment content
+      }
+
+      // Fetch comments with pagination
+      const [comments, total] = await this.commentRepo.findAndCount({
+        where,
+        order: { created_at: "DESC" },
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+
+      return {
+        comments,
+        total,
+        page,
+        limit,
+      };
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       }
-      throw new CustomError("Failed to retrieve comments", 500);
+      throw new CustomError("Failed to retrieve filtered comments", 500);
     }
   }
 
