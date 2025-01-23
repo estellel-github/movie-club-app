@@ -9,8 +9,10 @@ const strongPassword = z
   .regex(/[0-9]/, "Password must contain at least one number")
   .regex(/[\W_]/, "Password must contain at least one special character");
 
+const email = z.string().email("Invalid email format");
+
 export const registerSchema = z.object({
-  email: z.string().email("Invalid email format"),
+  email: email,
   password: strongPassword,
   username: z
     .string()
@@ -26,11 +28,15 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.string().email("Invalid email format"),
+  email: email,
   password: z.string(),
 });
 
 export const resetPasswordSchema = z.object({
-  reset_token: z.string().min(1, "Reset token is required"),
+  token: z
+    .string()
+    .min(1, "Token is required")
+    .regex(/^[a-f0-9]{32}$/i, "Invalid token format"),
+  // email: email,
   new_password: strongPassword,
 });
