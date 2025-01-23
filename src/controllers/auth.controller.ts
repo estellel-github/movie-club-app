@@ -48,8 +48,10 @@ export const generateResetToken = async (
     if (!email) {
       throw new CustomError("Email is required", 400);
     }
-    const token = await authService.generateResetToken(email);
-    res.status(200).json({ message: "Reset token generated", token });
+    await authService.generateResetToken(email);
+    res.status(200).json({
+      message: "Reset token generated. Contact admin to retrieve it.",
+    });
   } catch (error) {
     next(error);
   }
