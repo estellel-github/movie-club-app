@@ -5,7 +5,9 @@ const envFile =
     ? ".env.prod"
     : process.env.NODE_ENV === "test"
       ? ".env.test"
-      : ".env";
+      : process.env.NODE_ENV === "local"
+        ? ".env.local"
+        : ".env";
 
 console.log(`🌱 Using environment config: ${envFile}`);
 
