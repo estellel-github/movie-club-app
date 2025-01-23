@@ -23,19 +23,32 @@ export class AuthService {
     intro_msg,
     username,
   }: RegisterRequest): Promise<RegisterResponse> {
-    await this.userService.checkIfUserExists(email, username);
+    try {
+      await this.userService.checkIfUserExists(email, username);
 
-    const newUser = await this.userService.createUser({
-      email,
-      password,
-      intro_msg,
-      username,
-    });
-    const userWithoutPassword = excludeFields(newUser, ["password"]);
-    return {
-      message: "User registered successfully",
-      user: userWithoutPassword,
-    };
+      const newUser = await this.userService.createUser({
+        email,
+        password,
+        intro_msg,
+        username,
+      });
+
+      const userWithoutSensitiveInfo = excludeFields(newUser, [
+        "password",
+        "reset_token",
+        "reset_token_expires",
+      ]);
+
+      return {
+        message: "User registered successfully",
+        user: userWithoutSensitiveInfo,
+      };
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new CustomError("Failed to register", 500);
+    }
   }
 
   async login({ email, password }: LoginRequest): Promise<LoginResponse> {

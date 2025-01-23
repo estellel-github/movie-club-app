@@ -16,7 +16,7 @@ export interface LoginRequest {
 // Response types
 export interface RegisterResponse {
   message: string;
-  user: Omit<User, "password">; // Exclude the password field
+  user: Omit<User, "password" | "reset_token" | "reset_token_expires">;
 }
 
 export interface LoginResponse {
