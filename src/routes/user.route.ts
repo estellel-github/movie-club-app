@@ -5,7 +5,10 @@ import {
   updateUserProfile,
   deleteUserAccount,
 } from "../controllers/user.controller.js";
-import { validate } from "../middleware/validation.middleware.js";
+import {
+  validateBody,
+  validateQuery,
+} from "../middleware/validation.middleware.js";
 import {
   updateUserProfileSchema,
   userIdParamSchema,
@@ -16,19 +19,19 @@ const router = Router();
 router.get(
   "/profile/:userid",
   authenticate,
-  validate(userIdParamSchema),
+  validateBody(userIdParamSchema),
   getUserProfile,
 );
 router.patch(
   "/:user_id",
   authenticate,
-  validate(updateUserProfileSchema),
+  validateQuery(updateUserProfileSchema),
   updateUserProfile,
 );
 router.delete(
   "/:user_id",
   authenticate,
-  validate(userIdParamSchema),
+  validateQuery(userIdParamSchema),
   deleteUserAccount,
 );
 

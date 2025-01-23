@@ -5,11 +5,16 @@ import {
   getRSVPsForEvent,
   updateRSVP,
 } from "../controllers/rsvp.controller.js";
+import { validateBody } from "../middleware/validation.middleware.js";
+import {
+  createRSVPSchema,
+  updateRSVPSchema,
+} from "../validators/rsvp.validator.js";
 
 const router = Router();
 
-router.post("/:id", authenticate, createRSVP);
+router.post("/:id", validateBody(createRSVPSchema), authenticate, createRSVP);
 router.get("/:id", authenticate, getRSVPsForEvent);
-router.patch("/:id", authenticate, updateRSVP);
+router.patch("/:id", validateBody(updateRSVPSchema), authenticate, updateRSVP);
 
 export default router;

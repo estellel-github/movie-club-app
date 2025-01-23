@@ -6,7 +6,7 @@ import {
   deleteComment,
   getCommentsByEvent,
 } from "../controllers/comment.controller.js";
-import { validate } from "../middleware/validation.middleware.js";
+import { validateBody } from "../middleware/validation.middleware.js";
 import {
   createCommentSchema,
   updateCommentSchema,
@@ -16,11 +16,16 @@ const router = Router();
 
 router.get("/:event_id", getCommentsByEvent);
 
-router.post("/", authenticate, validate(createCommentSchema), createComment);
+router.post(
+  "/",
+  authenticate,
+  validateBody(createCommentSchema),
+  createComment,
+);
 router.patch(
   "/:comment_id",
   authenticate,
-  validate(updateCommentSchema),
+  validateBody(updateCommentSchema),
   updateComment,
 );
 router.delete("/:comment_id", authenticate, deleteComment);
