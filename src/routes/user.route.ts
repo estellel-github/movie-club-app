@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth.middleware.js";
+import {
+  authenticate,
+  authorizeUserAction,
+} from "../middleware/auth.middleware.js";
 import {
   getUserProfile,
   updateUserProfile,
   deleteUserAccount,
 } from "../controllers/user.controller.js";
-import {
-  validateBody,
-  validateQuery,
-} from "../middleware/validation.middleware.js";
+import { validate } from "../middleware/validation.middleware.js";
 import {
   updateUserProfileSchema,
   userIdParamSchema,
@@ -17,21 +17,23 @@ import {
 const router = Router();
 
 router.get(
-  "/profile/:userid",
+  "/profile/:target_userid",
   authenticate,
-  validateBody(userIdParamSchema),
+  validate(userIdParamSchema),
   getUserProfile,
 );
 router.patch(
-  "/:user_id",
+  "/:target_user_id",
   authenticate,
-  validateQuery(updateUserProfileSchema),
+  authorizeUserAction,
+  validate(updateUserProfileSchema),
   updateUserProfile,
 );
 router.delete(
-  "/:user_id",
+  "/:target_user_id",
   authenticate,
-  validateQuery(userIdParamSchema),
+  authorizeUserAction,
+  validate(userIdParamSchema),
   deleteUserAccount,
 );
 

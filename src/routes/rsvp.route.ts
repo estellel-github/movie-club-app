@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth.middleware.js";
+import {
+  authenticate,
+  authorizeUserAction,
+} from "../middleware/auth.middleware.js";
 import {
   createRSVP,
   updateRSVP,
   getFilteredRSVPs,
 } from "../controllers/rsvp.controller.js";
-import {
-  validateBody,
-  validateQuery,
-} from "../middleware/validation.middleware.js";
+import { validate } from "../middleware/validation.middleware.js";
 import {
   createRSVPSchema,
   updateRSVPSchema,
@@ -17,15 +17,22 @@ import {
 
 const router = Router();
 
-router.get(
-  "/",
+router.get("/", authenticate, validate(rsvpFilterSchema), getFilteredRSVPs);
+
+router.post(
+  "/:target_user_id/:event_id",
+  authorizeUserAction,
+  validate(createRSVPSchema),
   authenticate,
-  validateQuery(rsvpFilterSchema),
-  getFilteredRSVPs,
+  createRSVP,
 );
 
-router.post("/:id", validateBody(createRSVPSchema), authenticate, createRSVP);
-
-router.patch("/:id", validateBody(updateRSVPSchema), authenticate, updateRSVP);
+router.patch(
+  "/:target_user_id/:event_id",
+  authorizeUserAction,
+  validate(updateRSVPSchema),
+  authenticate,
+  updateRSVP,
+);
 
 export default router;

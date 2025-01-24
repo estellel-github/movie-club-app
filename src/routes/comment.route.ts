@@ -1,15 +1,15 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth.middleware.js";
+import {
+  authenticate,
+  authorizeUserAction,
+} from "../middleware/auth.middleware.js";
 import {
   createComment,
   updateComment,
   deleteComment,
   getComments,
 } from "../controllers/comment.controller.js";
-import {
-  validateBody,
-  validateQuery,
-} from "../middleware/validation.middleware.js";
+import { validate } from "../middleware/validation.middleware.js";
 import {
   commentFilterSchema,
   createCommentSchema,
@@ -18,20 +18,27 @@ import {
 
 const router = Router();
 
-router.get("/", authenticate, validateQuery(commentFilterSchema), getComments);
+router.get("/", authenticate, validate(commentFilterSchema), getComments);
 
 router.post(
-  "/",
+  "/:target_user_id/:event_id",
   authenticate,
-  validateBody(createCommentSchema),
+  authorizeUserAction,
+  validate(createCommentSchema),
   createComment,
 );
 router.patch(
-  "/:comment_id",
+  "/:target_user_id/:comment_id",
   authenticate,
-  validateBody(updateCommentSchema),
+  authorizeUserAction,
+  validate(updateCommentSchema),
   updateComment,
 );
-router.delete("/:comment_id", authenticate, deleteComment);
+router.delete(
+  "/:target_user_id/:comment_id",
+  authenticate,
+  authorizeUserAction,
+  deleteComment,
+);
 
 export default router;

@@ -49,3 +49,18 @@ export const authenticate = async (
     }
   }
 };
+
+export const authorizeUserAction = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { user_id: tokenUserId } = req.body;
+  const { target_user_id: paramUserId } = req.params;
+
+  if (tokenUserId !== paramUserId) {
+    throw new CustomError("Forbidden: You can only modify your own data", 403);
+  }
+
+  next();
+};

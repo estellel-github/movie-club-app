@@ -12,15 +12,12 @@ import {
   eventFilterSchema,
   updateEventSchema,
 } from "../validators/event.validator.js";
-import {
-  validateBody,
-  validateQuery,
-} from "../middleware/validation.middleware.js";
+import { validate } from "../middleware/validation.middleware.js";
 import { authorize } from "../middleware/permissions.middleware.js";
 
 const router = Router();
 
-router.get("/", validateQuery(eventFilterSchema), getAllEvents);
+router.get("/", validate(eventFilterSchema), getAllEvents);
 
 router.get("/:id", getEventById);
 
@@ -28,14 +25,14 @@ router.post(
   "/",
   authenticate,
   authorize(["admin", "host"]),
-  validateBody(createEventSchema),
+  validate(createEventSchema),
   createEvent,
 );
 router.patch(
   "/:id",
   authenticate,
   authorize(["admin", "host"]),
-  validateBody(updateEventSchema),
+  validate(updateEventSchema),
   updateEvent,
 );
 router.delete("/:id", authenticate, authorize(["admin", "host"]), deleteEvent);

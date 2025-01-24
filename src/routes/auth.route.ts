@@ -4,7 +4,7 @@ import {
   resetPassword,
 } from "../controllers/auth.controller.js";
 import { register, login } from "../controllers/auth.controller.js";
-import { validateBody } from "../middleware/validation.middleware.js";
+import { validate } from "../middleware/validation.middleware.js";
 import {
   registerSchema,
   loginSchema,
@@ -14,14 +14,10 @@ import { loginRateLimiter } from "../middleware/rateLimiter.js";
 
 const router = Router();
 
-router.post("/register", validateBody(registerSchema), register);
-router.post("/login", loginRateLimiter, validateBody(loginSchema), login);
+router.post("/register", validate(registerSchema), register);
+router.post("/login", loginRateLimiter, validate(loginSchema), login);
 
 router.post("/reset-token", generateResetToken);
-router.post(
-  "/reset-password",
-  validateBody(resetPasswordSchema),
-  resetPassword,
-);
+router.post("/reset-password", validate(resetPasswordSchema), resetPassword);
 
 export default router;
