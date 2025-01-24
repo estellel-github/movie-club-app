@@ -39,25 +39,17 @@ export const createComment = async (
 ) => {
   try {
     const { content } = req.body;
-    const user_id = req.user?.user_id;
-    const event_id = req.params.eventId;
+    const eventId = req.params.event_id;
+    const targetUserId = req.params.target_user_id;
 
-    if (!content || !user_id || !event_id) {
-      throw new CustomError("Missing required fields", 400);
-    }
-
-    const newComment = await commentService.createComment({
+    const newComment = await commentService.createComment(
+      eventId,
+      targetUserId,
       content,
-      user_id,
-      event_id,
-    });
+    );
     res.status(201).json(newComment);
   } catch (error) {
-    next(
-      error instanceof CustomError
-        ? error
-        : new CustomError("Failed to create comment", 500),
-    );
+    next(error);
   }
 };
 

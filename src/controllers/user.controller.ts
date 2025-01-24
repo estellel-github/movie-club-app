@@ -11,7 +11,7 @@ export const getUserProfile = async (
   next: NextFunction,
 ) => {
   try {
-    const { user_id: targetUserId } = req.params;
+    const { target_user_id: targetUserId } = req.params;
     const { user_id: requestingUserId, role } = req.user!;
 
     if (!targetUserId) {
@@ -52,14 +52,13 @@ export const updateUserProfile = async (
 ) => {
   try {
     const { user_id: requestingUserId, role } = req.user!;
-    const { user_id: targetUserId } = req.params; //
+    const { target_user_id: targetUserId } = req.params;
     const data = req.body;
 
     if (!targetUserId) {
       throw new CustomError("Target user ID not provided", 400); // Bad Request
     }
 
-    // Check if the user is allowed to update their profile
     const updatedUser = await userService.updateUser(
       targetUserId,
       data,
@@ -93,7 +92,6 @@ export const deleteUserAccount = async (
       throw new CustomError("Target user ID not provided", 400); // Bad Request
     }
 
-    // Check if the user is allowed to delete their profile
     await userService.deleteUser(targetUserId, requestingUserId, role);
 
     res.status(204).send(); // No content, successfully deleted

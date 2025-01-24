@@ -12,24 +12,24 @@ export const suspendUser = async (
   next: NextFunction,
 ) => {
   try {
-    const { userId } = req.params;
-    const { user_id: requestingUserId, role } = req.user!;
+    const { target_user_id: targetUserId } = req.params;
+    const { user_id: requestingUserId, role: requestingUserRole } = req.user!;
 
-    const user = await userService.getUserById(userId);
+    const target_user = await userService.getUserById(targetUserId);
 
-    if (!user) {
+    if (!target_user) {
       throw new CustomError("User not found", 404);
     }
 
-    if (user.status === userStatuses[1]) {
+    if (target_user.status === userStatuses[1]) {
       throw new CustomError("User already suspended", 400);
     }
 
     const updatedUser = await userService.updateUser(
-      userId,
+      targetUserId,
       { status: "suspended" },
       requestingUserId,
-      role,
+      requestingUserRole,
     );
 
     res.status(200).json({
@@ -52,7 +52,7 @@ export const updateUserRole = async (
   next: NextFunction,
 ) => {
   try {
-    const { userId } = req.params;
+    const { target_user_id: targetUserId } = req.params;
     const { role } = req.body;
     const { user_id: requestingUserId, role: requesterRole } = req.user!;
 
@@ -61,15 +61,15 @@ export const updateUserRole = async (
       throw new CustomError("Invalid role specified", 400);
     }
 
-    const user = await userService.getUserById(userId);
+    const user = await userService.getUserById(targetUserId);
 
     if (!user) {
       throw new CustomError("User not found", 404);
     }
 
     const updatedUser = await userService.updateUser(
-      userId,
-      { role },
+      targetUserId,
+      role,
       requestingUserId,
       requesterRole,
     );
