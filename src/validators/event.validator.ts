@@ -49,3 +49,7 @@ export const eventFilterSchema = z.object({
     .optional(),
   location: z.string().optional(),
 });
+
+export const eventReqSchema = z.object({
+  id: z.string().uuid("Invalid Event ID format"),
+});

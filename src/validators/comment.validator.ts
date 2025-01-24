@@ -1,19 +1,20 @@
 import { z } from "zod";
 
-export const createCommentSchema = z.object({
-  event_id: z.string().min(1, "Event ID is required"),
+export const commentBodySchema = z.object({
   content: z
     .string()
     .min(1, "Content is required")
-    .max(250, "Content must not exceed 1000 characters"),
-  user_id: z.string().min(1, "User ID is required"),
+    .max(1000, "Content is too long"),
 });
 
-export const updateCommentSchema = z.object({
-  content: z
-    .string()
-    .min(1, "Content is required")
-    .max(250, "Content must not exceed 1000 characters"),
+export const createCommentReqSchema = z.object({
+  event_id: z.string().uuid("Invalid event ID format"),
+  target_user_id: z.string().uuid("Invalid user ID format"),
+});
+
+export const updateCommentReqSchema = z.object({
+  comment_id: z.string().uuid("Invalid event ID format"),
+  target_user_id: z.string().uuid("Invalid user ID format"),
 });
 
 export const commentFilterSchema = z.object({

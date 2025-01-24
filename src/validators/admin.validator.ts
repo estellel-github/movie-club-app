@@ -10,3 +10,7 @@ export const updateRoleSchema = z.object({
 export const userIdSchema = z.object({
   userId: z.string().uuid("Invalid user ID format"),
 });
+
+export const userReqSchema = z.object({
+  target_user_id: z.string().uuid("Invalid user ID format"),
+});

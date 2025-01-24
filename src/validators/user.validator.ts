@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const userIdParamSchema = z.object({
-  user_id: z.string().uuid("Invalid user ID format"),
+export const userIdReqSchema = z.object({
+  target_user_id: z.string().uuid("Invalid user ID format"),
 });
 
 export const updateUserProfileSchema = z.object({

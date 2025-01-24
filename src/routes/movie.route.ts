@@ -11,6 +11,7 @@ import { validate } from "../middleware/validation.middleware.js";
 import {
   createMovieSchema,
   movieFilterSchema,
+  movieReqSchema,
   updateMovieSchema,
 } from "../validators/movie.validator.js";
 import { authorizeRole } from "../middleware/permissions.middleware.js";
@@ -18,7 +19,7 @@ import { authorizeRole } from "../middleware/permissions.middleware.js";
 const router = Router();
 
 router.get("/", validate(movieFilterSchema), getAllMovies);
-router.get("/:id", getMovieById);
+router.get("/:id", validate(undefined, movieReqSchema), getMovieById);
 
 router.post(
   "/",
@@ -32,7 +33,7 @@ router.patch(
   "/:id",
   authenticate,
   authorizeRole(["admin", "host"]),
-  validate(updateMovieSchema),
+  validate(updateMovieSchema, movieReqSchema),
   updateMovie,
 );
 
@@ -40,6 +41,7 @@ router.delete(
   "/:id",
   authenticate,
   authorizeRole(["admin", "host"]),
+  validate(undefined, movieReqSchema),
   deleteMovie,
 );
 

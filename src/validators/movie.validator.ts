@@ -64,3 +64,7 @@ export const movieFilterSchema = z.object({
     .regex(/^\d+$/, "Runtime must be a valid number")
     .optional(),
 });
+
+export const movieReqSchema = z.object({
+  id: z.string().uuid("Invalid Movie ID format"),
+});

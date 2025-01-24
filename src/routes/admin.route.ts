@@ -7,24 +7,24 @@ import {
 import { validate } from "../middleware/validation.middleware.js";
 import {
   updateRoleSchema,
-  userIdSchema,
+  userReqSchema,
 } from "../validators/admin.validator.js";
 import { authorizeRole } from "../middleware/permissions.middleware.js";
 
 const router = Router();
 
 router.patch(
-  "/suspend/:userId",
+  "/suspend/:target_user_id",
   authenticate,
   authorizeRole(["admin"]),
-  validate(userIdSchema),
+  validate(undefined, userReqSchema),
   suspendUser,
 );
 router.patch(
-  "/roles/:userId",
+  "/roles/:target_user_id",
   authenticate,
   authorizeRole(["admin"]),
-  validate(updateRoleSchema),
+  validate(updateRoleSchema, userReqSchema),
   updateUserRole,
 );
 

@@ -1,8 +1,7 @@
 import { Router } from "express";
-import {
-  authenticate,
-  authorizeUserAction,
-} from "../middleware/auth.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
+import { authorizeUserAction } from "../middleware/permissions.middleware.js";
+
 import {
   createComment,
   updateComment,
@@ -11,9 +10,10 @@ import {
 } from "../controllers/comment.controller.js";
 import { validate } from "../middleware/validation.middleware.js";
 import {
+  commentBodySchema,
   commentFilterSchema,
-  createCommentSchema,
-  updateCommentSchema,
+  createCommentReqSchema,
+  updateCommentReqSchema,
 } from "../validators/comment.validator.js";
 
 const router = Router();
@@ -24,20 +24,21 @@ router.post(
   "/:target_user_id/:event_id",
   authenticate,
   authorizeUserAction,
-  validate(createCommentSchema),
+  validate(commentBodySchema, createCommentReqSchema),
   createComment,
 );
 router.patch(
   "/:target_user_id/:comment_id",
   authenticate,
   authorizeUserAction,
-  validate(updateCommentSchema),
+  validate(commentBodySchema, updateCommentReqSchema),
   updateComment,
 );
 router.delete(
   "/:target_user_id/:comment_id",
   authenticate,
   authorizeUserAction,
+  validate(undefined, updateCommentReqSchema),
   deleteComment,
 );
 

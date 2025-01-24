@@ -1,19 +1,20 @@
 import { z } from "zod";
 import { rsvpStatuses } from "../models/rsvp.entity.js";
 
-// Create RSVP schema
-export const createRSVPSchema = z.object({
-  event_id: z.string().uuid("Invalid Event ID format"),
-  user_id: z.string().uuid("Invalid User ID format"),
-  status: z.enum(rsvpStatuses).optional(), // Optional status, defaults to "going"
+export const createRSVPBodySchema = z.object({
+  // Allow only "Going" or "Not going" -- Optional status, defaults to "going"
+  status: z.enum([rsvpStatuses[0], rsvpStatuses[2]]).optional(),
 });
 
-// Update RSVP schema
-export const updateRSVPSchema = z.object({
+export const RSVPReqSchema = z.object({
+  event_id: z.string().uuid("Invalid Event ID format"),
+  target_user_id: z.string().uuid("Invalid User ID format"),
+});
+
+export const updateRSVPBodySchema = z.object({
   status: z
-    // Allow only "Going" or "Not going" for edit
+    // Allow only "Going" or "Not going"
     .enum([rsvpStatuses[0], rsvpStatuses[2]])
-    .optional()
     .refine((val) => rsvpStatuses.includes(val!), {
       message: "Invalid RSVP status",
     }),

@@ -10,6 +10,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import {
   createEventSchema,
   eventFilterSchema,
+  eventReqSchema,
   updateEventSchema,
 } from "../validators/event.validator.js";
 import { validate } from "../middleware/validation.middleware.js";
@@ -32,13 +33,14 @@ router.patch(
   "/:id",
   authenticate,
   authorizeRole(["admin", "host"]),
-  validate(updateEventSchema),
+  validate(updateEventSchema, eventReqSchema),
   updateEvent,
 );
 router.delete(
   "/:id",
   authenticate,
   authorizeRole(["admin", "host"]),
+  validate(undefined, eventReqSchema),
   deleteEvent,
 );
 
