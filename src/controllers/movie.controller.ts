@@ -12,7 +12,7 @@ export const getAllMovies = async (
   try {
     const {
       page = 1,
-      limit = 10,
+      limit = 0,
       title,
       director,
       genre,

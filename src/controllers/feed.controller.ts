@@ -11,7 +11,7 @@ export const getActivityFeed = async (
   next: NextFunction,
 ) => {
   try {
-    const { page = 1, limit = 10, type, user_id, event_id, search } = req.query;
+    const { page = 1, limit = 0, type, user_id, event_id, search } = req.query;
 
     const result = await feedService.getFilteredActivityFeed(
       Number(page),

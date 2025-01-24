@@ -10,7 +10,7 @@ export const getComments = async (
   next: NextFunction,
 ) => {
   try {
-    const { page = 1, limit = 10, post_id, user_id, search } = req.query;
+    const { page = 1, limit = 0, post_id, user_id, search } = req.query;
 
     const result = await commentService.getFilteredComments(
       Number(page),

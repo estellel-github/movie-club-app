@@ -13,7 +13,7 @@ export const getAllEvents = async (
     console.log("Incoming Query Parameters:", req.query);
     const {
       page = "1",
-      limit = "10",
+      limit = "0",
       title,
       dateStart,
       dateEnd,
