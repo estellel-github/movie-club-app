@@ -33,10 +33,10 @@ export const loginSchema = z.object({
 });
 
 export const resetPasswordSchema = z.object({
+  email: email,
   token: z
     .string()
     .min(1, "Token is required")
     .regex(/^[a-f0-9]{32}$/i, "Invalid token format"),
-  // email: email,
   new_password: strongPassword,
 });

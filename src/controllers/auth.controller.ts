@@ -63,10 +63,17 @@ export const resetPassword = async (
   next: NextFunction,
 ) => {
   try {
-    const { reset_token, new_password } = req.body;
-    await authService.resetPassword(reset_token, new_password);
-    res.status(200).json({ message: "Password reset successfully" });
+    const { email, token, newPassword } = req.body;
+
+    // Perform the password reset
+    await authService.resetPassword(email, token, newPassword);
+
+    res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
-    next(error);
+    next(
+      error instanceof CustomError
+        ? error
+        : new CustomError("Failed to reset password", 500),
+    );
   }
 };

@@ -175,11 +175,24 @@ export class UserService {
     return user;
   }
 
-  async resetPassword(resetToken: string, newPassword: string): Promise<void> {
-    const user = await this.verifyResetToken(resetToken);
-    user.password = await argon2.hash(newPassword);
-    user.reset_token = null;
-    user.reset_token_expires = null;
+  async resetPassword(
+    email: string,
+    token: string,
+    newPassword: string,
+  ): Promise<void> {
+    const isTokenValid = this.verifyResetToken(token);
+    if (!isTokenValid) {
+      throw new CustomError("Invalid or expired token", 400);
+    }
+
+    const user = await this.userRepo.findOneBy({ email });
+    if (!user) {
+      throw new CustomError("User not found", 404);
+    }
+
+    const hashedPassword = await argon2.hash(newPassword);
+    user.password = hashedPassword;
+
     await this.userRepo.save(user);
   }
 }
