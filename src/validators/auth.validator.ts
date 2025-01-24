@@ -32,7 +32,7 @@ export const loginSchema = z.object({
   password: z.string(),
 });
 
-export const resetPasswordSchema = z.object({
+export const updatePasswordSchema = z.object({
   email: email,
   token: z
     .string()

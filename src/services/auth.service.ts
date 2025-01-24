@@ -65,11 +65,11 @@ export class AuthService {
     return this.userService.generateResetToken(email);
   }
 
-  async resetPassword(
+  async updatePassword(
     email: string,
     resetToken: string,
     newPassword: string,
   ): Promise<void> {
-    return this.userService.resetPassword(email, resetToken, newPassword);
+    return this.userService.updatePassword(email, resetToken, newPassword);
   }
 }

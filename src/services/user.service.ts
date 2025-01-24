@@ -175,7 +175,7 @@ export class UserService {
     return user;
   }
 
-  async resetPassword(
+  async updatePassword(
     email: string,
     token: string,
     newPassword: string,

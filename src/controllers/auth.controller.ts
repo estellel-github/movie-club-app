@@ -57,7 +57,7 @@ export const generateResetToken = async (
   }
 };
 
-export const resetPassword = async (
+export const updatePassword = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -65,8 +65,7 @@ export const resetPassword = async (
   try {
     const { email, token, newPassword } = req.body;
 
-    // Perform the password reset
-    await authService.resetPassword(email, token, newPassword);
+    await authService.updatePassword(email, token, newPassword);
 
     res.status(200).json({ message: "Password reset successful" });
   } catch (error) {

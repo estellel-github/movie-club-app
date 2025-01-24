@@ -1,14 +1,14 @@
 import { Router } from "express";
 import {
   generateResetToken,
-  resetPassword,
+  updatePassword,
 } from "../controllers/auth.controller.js";
 import { register, login } from "../controllers/auth.controller.js";
 import { validate } from "../middleware/validation.middleware.js";
 import {
   registerSchema,
   loginSchema,
-  resetPasswordSchema,
+  updatePasswordSchema,
 } from "../validators/auth.validator.js";
 import { loginRateLimiter } from "../middleware/rateLimiter.js";
 
@@ -18,6 +18,6 @@ router.post("/register", validate(registerSchema), register);
 router.post("/login", loginRateLimiter, validate(loginSchema), login);
 
 router.post("/reset-token", generateResetToken);
-router.post("/reset-password", validate(resetPasswordSchema), resetPassword);
+router.post("/update-password", validate(updatePasswordSchema), updatePassword);
 
 export default router;
