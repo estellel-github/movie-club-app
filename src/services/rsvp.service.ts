@@ -1,4 +1,4 @@
-import type { Repository } from "typeorm";
+import type { Repository, FindOptionsWhere } from "typeorm";
 import { AppDataSource } from "../config/database.js";
 import { RSVP } from "../models/rsvp.entity.js";
 import { Event } from "../models/event.entity.js";
@@ -6,6 +6,13 @@ import { CustomError } from "../utils/customError.js";
 import type { RSVPStatus } from "../models/rsvp.entity.js";
 import { rsvpStatuses } from "../models/rsvp.entity.js";
 import { ActivityLogService } from "../services/activity.service.js";
+
+type RsvpFilters = {
+  rsvp_id?: string;
+  user_id?: string;
+  event_id?: string;
+  status?: RSVPStatus;
+};
 
 export class RSVPService {
   private rsvpRepo: Repository<RSVP>;
@@ -66,14 +73,42 @@ export class RSVPService {
     }
   }
 
-  async getRSVPsForEvent(event_id: string): Promise<RSVP[]> {
+  async getFilteredRSVPs(
+    page: number,
+    limit: number,
+    filters: RsvpFilters,
+  ): Promise<{ rsvps: RSVP[]; total: number; page: number; limit: number }> {
     try {
-      return await this.rsvpRepo.findBy({ event_id });
+      const where: FindOptionsWhere<RSVP> = {};
+
+      if (filters.user_id) {
+        where.user_id = filters.user_id;
+      }
+      if (filters.event_id) {
+        where.event_id = filters.event_id;
+      }
+      if (filters.status) {
+        where.status = filters.status;
+      }
+
+      const [rsvps, total] = await this.rsvpRepo.findAndCount({
+        where,
+        order: { created_at: "DESC" },
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+
+      return {
+        rsvps,
+        total,
+        page,
+        limit,
+      };
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       }
-      throw new CustomError("Failed to retrieve RSVPs for the event", 500);
+      throw new CustomError("Failed to retrieve filtered RSVPs", 500);
     }
   }
 

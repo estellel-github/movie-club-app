@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { RSVPService } from "../services/rsvp.service.js";
 import { CustomError } from "../utils/customError.js";
+import type { RSVPStatus } from "../models/rsvp.entity.js";
 
 const rsvpService = new RSVPService();
 
@@ -36,15 +37,26 @@ export const createRSVP = async (
   }
 };
 
-export const getRSVPsForEvent = async (
+export const getFilteredRSVPs = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const { id: event_id } = req.params;
-    const rsvps = await rsvpService.getRSVPsForEvent(event_id);
-    res.status(200).json(rsvps);
+    const { page, limit, rsvp_id, user_id, event_id, status } = req.query;
+
+    const result = await rsvpService.getFilteredRSVPs(
+      page ? Number(page) : 1,
+      limit ? Number(limit) : 0,
+      {
+        rsvp_id: rsvp_id as string,
+        user_id: user_id as string,
+        event_id: event_id as string,
+        status: status as string as RSVPStatus,
+      },
+    );
+
+    res.status(200).json(result);
   } catch (error) {
     next(
       error instanceof CustomError

@@ -10,5 +10,29 @@ export const createRSVPSchema = z.object({
 
 // Update RSVP schema
 export const updateRSVPSchema = z.object({
-  status: z.enum([rsvpStatuses[0], rsvpStatuses[2]]), // Only allow "going" or "not going" for updates
+  status: z
+    // Allow only "Going" or "Not going" for edit
+    .enum([rsvpStatuses[0], rsvpStatuses[2]])
+    .optional()
+    .refine((val) => rsvpStatuses.includes(val!), {
+      message: "Invalid RSVP status",
+    }),
+});
+
+export const rsvpFilterSchema = z.object({
+  page: z.string().regex(/^\d+$/, "Page must be a positive integer").optional(),
+  limit: z
+    .string()
+    .regex(/^\d+$/, "Limit must be a positive integer")
+    .optional(),
+  rsvp_id: z.string().uuid("Invalid RSVP ID format").optional(),
+  user_id: z.string().uuid("Invalid user ID format").optional(),
+  event_id: z.string().uuid("Invalid event ID format").optional(),
+  status: z.union([
+    z.enum(["going", "waitlisted", "not going"], {
+      message: "Invalid RSVP status",
+    }),
+    z.undefined(),
+    z.null(),
+  ]),
 });
