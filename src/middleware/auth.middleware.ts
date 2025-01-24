@@ -1,6 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.js";
 import { CustomError } from "../utils/customError.js";
+import { UserService } from "../services/user.service.js";
+
+const userService = new UserService();
 
 export const authenticate = async (
   req: Request,
@@ -22,6 +25,17 @@ export const authenticate = async (
 
       if (!decoded || typeof decoded !== "object" || !decoded.user_id) {
         throw new CustomError("Invalid token", 403); // Forbidden
+      }
+
+      // Fetch user details from the database to verify status
+      const user = await userService.getUserById(decoded.user_id);
+
+      // Check if the user is suspended
+      if (user.status === "suspended") {
+        throw new CustomError(
+          "Your account has been suspended. Please contact the admin.",
+          403,
+        );
       }
 
       req.user = decoded as { user_id: string; role: string }; // Attach user to request
@@ -48,19 +62,4 @@ export const authenticate = async (
       );
     }
   }
-};
-
-export const authorizeUserAction = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const { user_id: tokenUserId } = req.body;
-  const { target_user_id: paramUserId } = req.params;
-
-  if (tokenUserId !== paramUserId) {
-    throw new CustomError("Forbidden: You can only modify your own data", 403);
-  }
-
-  next();
 };

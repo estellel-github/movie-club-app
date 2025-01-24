@@ -13,7 +13,7 @@ import {
   updateEventSchema,
 } from "../validators/event.validator.js";
 import { validate } from "../middleware/validation.middleware.js";
-import { authorize } from "../middleware/permissions.middleware.js";
+import { authorizeRole } from "../middleware/permissions.middleware.js";
 
 const router = Router();
 
@@ -24,17 +24,22 @@ router.get("/:id", getEventById);
 router.post(
   "/",
   authenticate,
-  authorize(["admin", "host"]),
+  authorizeRole(["admin", "host"]),
   validate(createEventSchema),
   createEvent,
 );
 router.patch(
   "/:id",
   authenticate,
-  authorize(["admin", "host"]),
+  authorizeRole(["admin", "host"]),
   validate(updateEventSchema),
   updateEvent,
 );
-router.delete("/:id", authenticate, authorize(["admin", "host"]), deleteEvent);
+router.delete(
+  "/:id",
+  authenticate,
+  authorizeRole(["admin", "host"]),
+  deleteEvent,
+);
 
 export default router;

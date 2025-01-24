@@ -9,21 +9,21 @@ import {
   updateRoleSchema,
   userIdSchema,
 } from "../validators/admin.validator.js";
-import { authorize } from "../middleware/permissions.middleware.js";
+import { authorizeRole } from "../middleware/permissions.middleware.js";
 
 const router = Router();
 
 router.patch(
   "/suspend/:userId",
   authenticate,
-  authorize(["admin"]),
+  authorizeRole(["admin"]),
   validate(userIdSchema),
   suspendUser,
 );
 router.patch(
   "/roles/:userId",
   authenticate,
-  authorize(["admin"]),
+  authorizeRole(["admin"]),
   validate(updateRoleSchema),
   updateUserRole,
 );

@@ -1,8 +1,6 @@
 import { Router } from "express";
-import {
-  authenticate,
-  authorizeUserAction,
-} from "../middleware/auth.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
+import { authorizeUserAction } from "../middleware/permissions.middleware.js";
 import {
   getUserProfile,
   updateUserProfile,

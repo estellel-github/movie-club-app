@@ -2,8 +2,12 @@ import type { Request, Response, NextFunction } from "express";
 import { CustomError } from "../utils/customError.js";
 import type { UserRole } from "../models/user.entity.js";
 
-export const authorize = (allowedRoles: UserRole[]) => {
+export const authorizeRole = (allowedRoles: UserRole[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user || !req.user.user_id) {
+      throw new CustomError("Unauthorized: User not authenticated", 401);
+    }
+
     const userRole = req.user?.role;
 
     if (!userRole) {
@@ -21,4 +25,19 @@ export const authorize = (allowedRoles: UserRole[]) => {
 
     next();
   };
+};
+
+export const authorizeUserAction = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { user_id: tokenUserId } = req.user!;
+  const { target_user_id: paramUserId } = req.params;
+
+  if (tokenUserId !== paramUserId) {
+    throw new CustomError("Forbidden: You can only modify your own data", 403);
+  }
+
+  next();
 };
