@@ -2,10 +2,12 @@ import type { Repository, FindOptionsWhere } from "typeorm";
 import { AppDataSource } from "../config/database.js";
 import { RSVP } from "../models/rsvp.entity.js";
 import { Event } from "../models/event.entity.js";
+import { User } from "../models/user.entity.js";
 import { CustomError } from "../utils/customError.js";
 import type { RSVPStatus } from "../models/rsvp.entity.js";
 import { rsvpStatuses } from "../models/rsvp.entity.js";
 import { ActivityLogService } from "../services/activity.service.js";
+import { UserService } from "./user.service.js";
 
 type RsvpFilters = {
   rsvp_id?: string;
@@ -16,20 +18,29 @@ type RsvpFilters = {
 
 export class RSVPService {
   private rsvpRepo: Repository<RSVP>;
+  private userRepo: Repository<User>;
   private eventRepo: Repository<Event>;
+  private userService: UserService;
   private activityLogService: ActivityLogService;
 
   constructor() {
     this.rsvpRepo = AppDataSource.getRepository(RSVP);
     this.eventRepo = AppDataSource.getRepository(Event);
+    this.userRepo = AppDataSource.getRepository(User);
     this.activityLogService = new ActivityLogService();
+    this.userService = new UserService();
   }
 
   async createRSVP(event_id: string, user_id: string): Promise<RSVP> {
     try {
+      const user = await this.userRepo.findOneBy({ user_id });
       const event = await this.eventRepo.findOneBy({ event_id });
+
       if (!event) {
         throw new CustomError("Event not found", 404);
+      }
+      if (!user) {
+        throw new CustomError("User not found", 404);
       }
 
       // Count current attendees with "going" status
@@ -59,10 +70,18 @@ export class RSVPService {
       });
 
       await this.rsvpRepo.save(rsvp);
-
-      await this.activityLogService.logRSVPUpdate(event_id, user_id, status);
-
       await this.processWaitlistForEvent(event_id);
+
+      const username = user.username;
+      const eventTitle = event.title;
+
+      await this.activityLogService.logRSVPUpdate(
+        event_id,
+        user_id,
+        status,
+        username,
+        eventTitle,
+      );
 
       return rsvp;
     } catch (error) {
@@ -112,15 +131,31 @@ export class RSVPService {
     }
   }
 
-  async getRSVPById(rsvp_id: string): Promise<RSVP | null> {
-    return await this.rsvpRepo.findOneBy({ rsvp_id });
+  async getRSVPByUserAndEvent(
+    user_id: string,
+    event_id: string,
+  ): Promise<RSVP | null> {
+    return await this.rsvpRepo.findOneBy({ user_id, event_id });
   }
 
-  async updateRSVP(rsvp_id: string, status: RSVP["status"]): Promise<RSVP> {
+  async updateRSVP(
+    user_id: string,
+    event_id: string,
+    status: RSVPStatus,
+  ): Promise<RSVP> {
     try {
-      const rsvp = await this.rsvpRepo.findOneBy({ rsvp_id });
+      const rsvp = await this.getRSVPByUserAndEvent(user_id, event_id);
+      const user = await this.userRepo.findOneBy({ user_id });
+      const event = await this.eventRepo.findOneBy({ event_id });
+
       if (!rsvp) {
         throw new CustomError("RSVP not found", 404);
+      }
+      if (!event) {
+        throw new CustomError("Event not found", 404);
+      }
+      if (!user) {
+        throw new CustomError("User not found", 404);
       }
 
       const previousStatus = rsvp.status;
@@ -128,9 +163,17 @@ export class RSVPService {
 
       const updatedRSVP = await this.rsvpRepo.save(rsvp);
 
+      const username = user.username;
+      const eventTitle = event.title;
+
       if (previousStatus !== status) {
-        const { event_id, user_id } = rsvp;
-        await this.activityLogService.logRSVPUpdate(event_id, user_id, status);
+        await this.activityLogService.logRSVPUpdate(
+          event_id,
+          user_id,
+          status,
+          username,
+          eventTitle,
+        );
         await this.processWaitlistForEvent(event_id);
       }
 
@@ -144,39 +187,58 @@ export class RSVPService {
   }
 
   async processWaitlistForEvent(event_id: string): Promise<void> {
-    const event = await this.eventRepo.findOneBy({ event_id });
-    if (!event) {
-      throw new CustomError("Event not found", 404);
-    }
+    try {
+      const event = await this.eventRepo.findOneBy({ event_id });
 
-    const attendeeCount = await this.rsvpRepo.countBy({
-      event_id,
-      status: rsvpStatuses[0],
-    });
+      if (!event) {
+        throw new CustomError("Event not found", 404);
+      }
 
-    const availableSpots = event.max_attendees - attendeeCount;
-    // No spots available, no action needed
-    if (availableSpots <= 0) return;
-
-    // Get the top-priority waitlisted users
-    const waitlistedUsers = await this.rsvpRepo.find({
-      where: { event_id, status: rsvpStatuses[1] },
-      order: { priority: "ASC" },
-      take: availableSpots,
-    });
-
-    // Move waitlisted users to "going"
-    for (const user of waitlistedUsers) {
-      user.status = rsvpStatuses[0]; // "going"
-      await this.rsvpRepo.save(user);
-      console.log(`User ${user.user_id} moved to` + rsvpStatuses[0]);
-
-      // Log the movement from waitlisted to going
-      await this.activityLogService.logRSVPUpdate(
+      const attendeeCount = await this.rsvpRepo.countBy({
         event_id,
-        user.user_id,
-        rsvpStatuses[0],
-      );
+        status: rsvpStatuses[0],
+      });
+
+      const availableSpots = event.max_attendees - attendeeCount;
+      // No spots available, no action needed
+      if (availableSpots <= 0) return;
+
+      // Get the top-priority waitlisted users
+      const waitlistedUsers = await this.rsvpRepo.find({
+        where: { event_id, status: rsvpStatuses[1] },
+        order: { priority: "ASC" },
+        take: availableSpots,
+      });
+
+      // Move waitlisted users to "going"
+      for (const waitlistedUser of waitlistedUsers) {
+        waitlistedUser.status = rsvpStatuses[0]; // "going"
+        await this.rsvpRepo.save(waitlistedUser);
+        console.log(
+          `User ${waitlistedUser.user_id} moved to` + rsvpStatuses[0],
+        );
+        const eventTitle = event.title;
+
+        const user = await this.userService.getUserById(waitlistedUser.user_id);
+
+        if (!user || !user.user_id || !user.username) {
+          throw new CustomError("User info not found", 404);
+        } else {
+          // Log the movement from waitlisted to going
+          await this.activityLogService.logRSVPUpdate(
+            event_id,
+            user.user_id,
+            rsvpStatuses[0],
+            user.username,
+            eventTitle,
+          );
+        }
+      }
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new CustomError("Failed to process waitlist", 500);
     }
   }
 }

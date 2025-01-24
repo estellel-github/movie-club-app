@@ -3,8 +3,9 @@ import { AppDataSource } from "../config/database.js";
 import { Comment } from "../models/comment.entity.js";
 import { CustomError } from "../utils/customError.js";
 import { ActivityLogService } from "../services/activity.service.js";
-import { UserService } from "../services/user.service.js";
 import { Like } from "typeorm";
+import { User } from "../models/user.entity.js";
+import { Event } from "../models/event.entity.js";
 
 type CommentFilters = {
   event_id?: string;
@@ -12,14 +13,16 @@ type CommentFilters = {
   search?: string;
 };
 
-const userService = new UserService();
-
 export class CommentService {
   private commentRepo: Repository<Comment>;
   private activityLogService: ActivityLogService;
+  private userRepo: Repository<User>;
+  private eventRepo: Repository<Event>;
 
   constructor() {
     this.commentRepo = AppDataSource.getRepository(Comment);
+    this.eventRepo = AppDataSource.getRepository(Event);
+    this.userRepo = AppDataSource.getRepository(User);
     this.activityLogService = new ActivityLogService();
   }
 
@@ -70,15 +73,43 @@ export class CommentService {
     }
   }
 
-  async createComment(data: Partial<Comment>): Promise<Comment> {
+  async createComment(
+    eventId: string,
+    userId: string,
+    content: string,
+  ): Promise<Comment> {
     try {
-      const comment = this.commentRepo.create(data);
+      // Create and save the comment
+      const comment = this.commentRepo.create({
+        event_id: eventId,
+        user_id: userId,
+        content,
+      });
+
       const savedComment = await this.commentRepo.save(comment);
 
+      // Fetch user nickname and event title
+      const user = await this.userRepo.findOneBy({ user_id: userId });
+      const event = await this.eventRepo.findOneBy({ event_id: eventId });
+
+      if (!user || !user.username) {
+        throw new CustomError("User not found", 404);
+      }
+
+      if (!event || !event.title) {
+        throw new CustomError("Event not found", 404);
+      }
+
+      const username = user.username;
+      const eventTitle = event.title;
+
+      // Log the comment addition
       await this.activityLogService.logCommentAdded(
-        savedComment.event_id,
-        savedComment.user_id,
-        savedComment.content,
+        eventId,
+        userId,
+        content,
+        username,
+        eventTitle,
       );
 
       return savedComment;
@@ -99,15 +130,7 @@ export class CommentService {
       const comment = await this.commentRepo.findOneBy({ comment_id, user_id });
 
       if (!comment) {
-        throw new CustomError("Comment not found or unauthorized", 404);
-      }
-
-      // Check if the authenticated user is the owner of the comment
-      if (comment.user_id !== user_id) {
-        throw new CustomError(
-          "You are not authorized to update this comment",
-          403,
-        ); // Forbidden
+        throw new CustomError("Comment not found", 404);
       }
 
       comment.content = content;
@@ -125,21 +148,10 @@ export class CommentService {
   async deleteComment(comment_id: string, user_id: string): Promise<void> {
     try {
       const comment = await this.commentRepo.findOneBy({ comment_id, user_id });
-      const user = await userService.getUserById(user_id);
 
       if (!comment) {
-        throw new CustomError("Comment not found or unauthorized", 404);
+        throw new CustomError("Comment not found", 404);
       }
-
-      // Check if the authenticated user is the owner or an admin
-      if (comment.user_id !== user_id && user.role !== "admin") {
-        throw new CustomError(
-          "You are not authorized to delete this comment",
-          403,
-        ); // Forbidden
-      }
-
-      // Later, optionally, log the comment deletion activity (if needed)
 
       await this.commentRepo.delete(comment_id);
     } catch (error) {

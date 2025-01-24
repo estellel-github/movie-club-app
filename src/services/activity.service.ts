@@ -12,54 +12,59 @@ export class ActivityLogService {
     user_id?: string,
     event_id?: string,
   ): Promise<void> {
-    const activityLog = this.activityLogRepo.create({
-      type,
-      details,
-      user_id: user_id || null,
-      event_id: event_id || null,
-      created_at: new Date(),
-    });
+    try {
+      const activityLog = this.activityLogRepo.create({
+        type,
+        details,
+        user_id: user_id || null,
+        event_id: event_id || null,
+        created_at: new Date(),
+      });
 
-    await this.activityLogRepo.save(activityLog);
-  }
-  catch(error: any) {
-    if (error instanceof CustomError) {
-      throw error;
+      await this.activityLogRepo.save(activityLog);
+    } catch (error: any) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new CustomError("Failed to log activity", 500);
     }
-    throw new CustomError("Failed to log activity", 500);
   }
 
   async logUserJoin(userId: string, userName: string): Promise<void> {
     const details = `User '${userName}' has joined the club.`;
-    await this.logActivity(activityTypes[0], details, userId);
+    await this.logActivity(activityTypes[0], details, userId, undefined);
   }
 
-  async logEventCreated(eventId: string, eventName: string): Promise<void> {
-    const details = `Event '${eventName}' has been created.`;
+  async logEventCreated(eventId: string, eventTitle: string): Promise<void> {
+    const details = `Event '${eventTitle}' has been created.`;
     await this.logActivity(activityTypes[1], details, undefined, eventId);
   }
 
-  async logEventUpdated(eventId: string, eventName: string): Promise<void> {
-    const details = `Event '${eventName}' has been edited.`;
+  async logEventUpdated(eventId: string, eventTitle: string): Promise<void> {
+    const details = `Event '${eventTitle}' has been edited.`;
     await this.logActivity(activityTypes[2], details, undefined, eventId);
   }
 
-  async logCommentAdded(
-    eventId: string,
-    userId: string,
-    comment: string,
+  async logRSVPUpdate(
+    event_id: string,
+    user_id: string,
+    status: string,
+    username: string,
+    eventTitle: string,
   ): Promise<void> {
-    const details = `User '${userId}' added a comment: '${comment}' on event '${eventId}'.`;
-    await this.logActivity(activityTypes[3], details, userId, eventId);
+    const details = `User ${username} now has the RSVP ${status} for event "${eventTitle}"`;
+    await this.logActivity(activityTypes[4], details, user_id, event_id);
   }
 
-  async logRSVPUpdate(
-    eventId: string,
-    userId: string,
-    status: string,
+  async logCommentAdded(
+    event_id: string,
+    user_id: string,
+    comment: string,
+    username: string,
+    eventTitle: string,
   ): Promise<void> {
-    const details = `User '${userId}' updated RSVP to '${status}' for event '${eventId}'.`;
-    await this.logActivity(activityTypes[4], details, userId, eventId);
+    const details = `User ${username} added a comment on event "${eventTitle}": "${comment}"`;
+    await this.logActivity(activityTypes[3], details, user_id, event_id);
   }
 
   async logMovieCreated(movieId: string, movieName: string): Promise<void> {
