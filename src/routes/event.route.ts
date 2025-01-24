@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getAllEvents,
+  getAllPublicEvents,
   getEventById,
   createEvent,
   updateEvent,
@@ -18,7 +19,11 @@ import { authorizeRole } from "../middleware/permissions.middleware.js";
 
 const router = Router();
 
-router.get("/", validate(eventFilterSchema), getAllEvents);
+// Public route (without sensitive fields)
+router.get("/public", validate(eventFilterSchema), getAllPublicEvents);
+
+// Private route (with all details)
+router.get("/", authenticate, validate(eventFilterSchema), getAllEvents);
 
 router.get("/:id", getEventById);
 

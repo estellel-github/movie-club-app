@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { EventService } from "../services/event.service.js";
 import { CustomError } from "../utils/customError.js";
+import { excludeFields } from "../utils/excludeFields.js";
 
 const eventService = new EventService();
 
@@ -37,6 +38,50 @@ export const getAllEvents = async (
       error instanceof CustomError
         ? error
         : new CustomError("Failed to retrieve events", 500),
+    );
+  }
+};
+
+export const getAllPublicEvents = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const {
+      page = "1",
+      limit = "0",
+      title,
+      dateStart,
+      dateEnd,
+      location,
+    } = req.query;
+
+    const result = await eventService.getEventsWithFilters(
+      parseInt(page as string, 10),
+      parseInt(limit as string, 10),
+      {
+        title: title as string,
+        dateStart: dateStart as string,
+        dateEnd: dateEnd as string,
+        location: location as string,
+      },
+    );
+
+    // Use excludeFields to remove `location` and `host`
+    const publicEvents = result.events.map((event) =>
+      excludeFields(event, ["location", "host_id"]),
+    );
+
+    res.status(200).json({
+      ...result,
+      events: publicEvents,
+    });
+  } catch (error) {
+    next(
+      error instanceof CustomError
+        ? error
+        : new CustomError("Failed to retrieve public events", 500),
     );
   }
 };
