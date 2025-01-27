@@ -18,7 +18,12 @@ import {
 
 const router = Router();
 
-router.get("/", authenticate, validate(commentFilterSchema), getComments);
+router.get(
+  "/",
+  authenticate,
+  validate(undefined, commentFilterSchema),
+  getComments,
+);
 
 router.post(
   "/:target_user_id/:event_id",
