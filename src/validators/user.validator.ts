@@ -5,8 +5,16 @@ export const userIdReqSchema = z.object({
 });
 
 export const updateUserProfileSchema = z.object({
-  name: z.string().optional(),
-  username: z.string().optional(),
   email: z.string().email().optional(),
-  intro_msg: z.string().optional(),
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters long")
+    .max(30, "Username must not exceed 30 characters")
+    .regex(
+      /^[\p{L}\p{N}_&]+$/u,
+      "Username can only contain letters, numbers, underscores, and '&'",
+    ),
+  intro_msg: z
+    .string()
+    .max(255, "Intro message must not exceed 255 characters"),
 });

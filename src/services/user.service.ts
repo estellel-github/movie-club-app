@@ -163,8 +163,11 @@ export class UserService {
     return resetToken;
   }
 
-  async verifyResetToken(resetToken: string): Promise<User> {
-    const user = await this.userRepo.findOneBy({ reset_token: resetToken });
+  async verifyResetToken(resetToken: string, email: string): Promise<User> {
+    const user = await this.userRepo.findOneBy({
+      reset_token: resetToken,
+      email,
+    });
     if (
       !user ||
       !user.reset_token_expires ||
@@ -180,7 +183,7 @@ export class UserService {
     token: string,
     newPassword: string,
   ): Promise<void> {
-    const isTokenValid = this.verifyResetToken(token);
+    const isTokenValid = await this.verifyResetToken(token, email);
     if (!isTokenValid) {
       throw new CustomError("Invalid or expired token", 400);
     }
@@ -192,6 +195,10 @@ export class UserService {
 
     const hashedPassword = await argon2.hash(newPassword);
     user.password = hashedPassword;
+
+    // Clear the reset token after successful password reset
+    user.reset_token = null;
+    user.reset_token_expires = null;
 
     await this.userRepo.save(user);
   }

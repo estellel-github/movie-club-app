@@ -63,7 +63,7 @@ export const updatePassword = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, token, newPassword } = req.body;
+    const { email: email, token: token, new_password: newPassword } = req.body;
 
     await authService.updatePassword(email, token, newPassword);
 
@@ -72,7 +72,7 @@ export const updatePassword = async (
     next(
       error instanceof CustomError
         ? error
-        : new CustomError("Failed to reset password", 500),
+        : new CustomError("Failed to update password", 500),
     );
   }
 };

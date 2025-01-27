@@ -29,7 +29,7 @@ export const registerSchema = z.object({
 
 export const loginSchema = z.object({
   email: email,
-  password: z.string(),
+  password: z.string().min(1, "Password is required"),
 });
 
 export const updatePasswordSchema = z.object({
@@ -37,6 +37,6 @@ export const updatePasswordSchema = z.object({
   token: z
     .string()
     .min(1, "Token is required")
-    .regex(/^[a-f0-9]{32}$/i, "Invalid token format"),
+    .regex(/^[a-f0-9]{64}$/i, "Invalid token format"),
   new_password: strongPassword,
 });
