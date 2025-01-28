@@ -14,6 +14,7 @@ import healthRoutes from "./routes/health.route.js";
 import movieRoutes from "./routes/movie.route.js";
 import rsvpRoutes from "./routes/rsvp.route.js";
 import userRoutes from "./routes/user.route.js";
+import { validateJsonBody } from "./middleware/validateJsonBody.js";
 
 dotenv.config();
 
@@ -35,7 +36,8 @@ app.use("/api/movies", movieRoutes);
 app.use("/api/profile", userRoutes);
 app.use("/api/rsvps", rsvpRoutes);
 
-// Error Handler
+// Error Handling
+app.use(validateJsonBody);
 app.use(errorHandler);
 
 // Start server and connect to the database
