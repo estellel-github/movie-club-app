@@ -22,7 +22,7 @@ export class ActivityLogService {
       });
 
       await this.activityLogRepo.save(activityLog);
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       }
@@ -31,7 +31,7 @@ export class ActivityLogService {
   }
 
   async logUserJoin(userId: string, userName: string): Promise<void> {
-    const details = `User '${userName}' has joined the club.`;
+    const details = `'${userName}' has joined the club.`;
     await this.logActivity(activityTypes[0], details, userId, undefined);
   }
 
@@ -52,7 +52,7 @@ export class ActivityLogService {
     username: string,
     eventTitle: string,
   ): Promise<void> {
-    const details = `User ${username} now has the RSVP ${status} for event "${eventTitle}"`;
+    const details = `${username} now has the RSVP ${status} for event "${eventTitle}"`;
     await this.logActivity(activityTypes[4], details, user_id, event_id);
   }
 
@@ -63,12 +63,12 @@ export class ActivityLogService {
     username: string,
     eventTitle: string,
   ): Promise<void> {
-    const details = `User ${username} added a comment on event "${eventTitle}": "${comment}"`;
+    const details = `${username} added a comment on event "${eventTitle}": "${comment}"`;
     await this.logActivity(activityTypes[3], details, user_id, event_id);
   }
 
   async logMovieCreated(movieId: string, movieName: string): Promise<void> {
-    const details = `Movie '${movieName}' has been added to the collection.`;
+    const details = `${movieName} has been added to the movie collection.`;
     await this.logActivity(activityTypes[5], details, undefined, movieId);
   }
 }
