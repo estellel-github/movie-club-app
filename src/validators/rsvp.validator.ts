@@ -1,9 +1,14 @@
 import { z } from "zod";
 import { rsvpStatuses } from "../models/rsvp.entity.js";
 
+export const rsvpStatus = z
+  .enum(rsvpStatuses)
+  .refine((val) => rsvpStatuses.includes(val!), {
+    message: "Invalid RSVP status",
+  });
+
 export const createRSVPBodySchema = z.object({
-  // Allow only "Going" or "Not going" -- Optional status, defaults to "going"
-  status: z.enum([rsvpStatuses[0], rsvpStatuses[2]]).optional(),
+  status: rsvpStatus,
 });
 
 export const RSVPReqSchema = z.object({
@@ -12,12 +17,7 @@ export const RSVPReqSchema = z.object({
 });
 
 export const updateRSVPBodySchema = z.object({
-  status: z
-    // Allow only "Going" or "Not going"
-    .enum([rsvpStatuses[0], rsvpStatuses[2]])
-    .refine((val) => rsvpStatuses.includes(val!), {
-      message: "Invalid RSVP status",
-    }),
+  status: rsvpStatus,
 });
 
 export const rsvpFilterSchema = z.object({
@@ -30,7 +30,7 @@ export const rsvpFilterSchema = z.object({
   user_id: z.string().uuid("Invalid user ID format").optional(),
   event_id: z.string().uuid("Invalid event ID format").optional(),
   status: z.union([
-    z.enum(["going", "waitlisted", "not going"], {
+    z.enum(rsvpStatuses, {
       message: "Invalid RSVP status",
     }),
     z.undefined(),
