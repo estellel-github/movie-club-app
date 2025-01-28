@@ -35,6 +35,10 @@ export const authorizeUserAction = (
   const { user_id: tokenUserId } = req.user!;
   const { target_user_id: paramUserId } = req.params;
 
+  if (!tokenUserId || !paramUserId) {
+    throw new CustomError("Bad request: Missing user data", 400);
+  }
+
   if (tokenUserId !== paramUserId) {
     throw new CustomError("Forbidden: You can only modify your own data", 403);
   }
