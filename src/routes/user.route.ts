@@ -23,15 +23,15 @@ router.get(
 router.patch(
   "/:target_user_id",
   authenticate,
-  authorizeUserAction,
   validate(updateUserProfileSchema, userIdReqSchema),
+  authorizeUserAction,
   updateUserProfile,
 );
 router.delete(
   "/:target_user_id",
   authenticate,
-  authorizeUserAction,
   validate(undefined, userIdReqSchema),
+  authorizeUserAction,
   deleteUserAccount,
 );
 

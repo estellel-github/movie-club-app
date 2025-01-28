@@ -30,22 +30,22 @@ router.get("/:id", getEventById);
 router.post(
   "/",
   authenticate,
-  authorizeRole(["admin", "host"]),
   validate(createEventSchema),
+  authorizeRole(["admin", "host"]),
   createEvent,
 );
 router.patch(
   "/:id",
   authenticate,
-  authorizeRole(["admin", "host"]),
   validate(updateEventSchema, eventReqSchema),
+  authorizeRole(["admin", "host"]),
   updateEvent,
 );
 router.delete(
   "/:id",
   authenticate,
-  authorizeRole(["admin", "host"]),
   validate(undefined, eventReqSchema),
+  authorizeRole(["admin", "host"]),
   deleteEvent,
 );
 

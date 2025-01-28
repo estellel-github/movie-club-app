@@ -28,22 +28,22 @@ router.get(
 router.post(
   "/:target_user_id/:event_id",
   authenticate,
-  authorizeUserAction,
   validate(commentBodySchema, createCommentReqSchema),
+  authorizeUserAction,
   createComment,
 );
 router.patch(
   "/:target_user_id/:comment_id",
   authenticate,
-  authorizeUserAction,
   validate(commentBodySchema, updateCommentReqSchema),
+  authorizeUserAction,
   updateComment,
 );
 router.delete(
   "/:target_user_id/:comment_id",
   authenticate,
-  authorizeUserAction,
   validate(undefined, updateCommentReqSchema),
+  authorizeUserAction,
   deleteComment,
 );
 

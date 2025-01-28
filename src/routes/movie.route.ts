@@ -24,24 +24,24 @@ router.get("/:id", validate(undefined, movieReqSchema), getMovieById);
 router.post(
   "/",
   authenticate,
-  authorizeRole(["admin", "host"]),
   validate(createMovieSchema),
+  authorizeRole(["admin", "host"]),
   createMovie,
 );
 
 router.patch(
   "/:id",
   authenticate,
-  authorizeRole(["admin", "host"]),
   validate(updateMovieSchema, movieReqSchema),
+  authorizeRole(["admin", "host"]),
   updateMovie,
 );
 
 router.delete(
   "/:id",
   authenticate,
-  authorizeRole(["admin", "host"]),
   validate(undefined, movieReqSchema),
+  authorizeRole(["admin", "host"]),
   deleteMovie,
 );
 

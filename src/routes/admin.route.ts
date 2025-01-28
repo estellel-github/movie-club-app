@@ -16,15 +16,15 @@ const router = Router();
 router.patch(
   "/suspend/:target_user_id",
   authenticate,
-  authorizeRole(["admin"]),
   validate(undefined, userReqSchema),
+  authorizeRole(["admin"]),
   suspendUser,
 );
 router.patch(
   "/roles/:target_user_id",
   authenticate,
-  authorizeRole(["admin"]),
   validate(updateRoleSchema, userReqSchema),
+  authorizeRole(["admin"]),
   updateUserRole,
 );
 

@@ -16,21 +16,26 @@ import {
 
 const router = Router();
 
-router.get("/", authenticate, validate(rsvpFilterSchema), getFilteredRSVPs);
+router.get(
+  "/",
+  authenticate,
+  validate(undefined, rsvpFilterSchema),
+  getFilteredRSVPs,
+);
 
 router.post(
   "/:target_user_id/:event_id",
-  authorizeUserAction,
-  validate(createRSVPBodySchema, RSVPReqSchema),
   authenticate,
+  validate(createRSVPBodySchema, RSVPReqSchema),
+  authorizeUserAction,
   createRSVP,
 );
 
 router.patch(
   "/:target_user_id/:event_id",
-  authorizeUserAction,
-  validate(updateRSVPBodySchema, RSVPReqSchema),
   authenticate,
+  validate(updateRSVPBodySchema, RSVPReqSchema),
+  authorizeUserAction,
   updateRSVP,
 );
 
