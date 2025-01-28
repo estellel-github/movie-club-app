@@ -31,6 +31,15 @@ export class RSVPService {
     this.userService = new UserService();
   }
 
+  private async getHighestPriority(event_id: string): Promise<number> {
+    const highestPriorityRSVP = await this.rsvpRepo.findOne({
+      where: { event_id },
+      order: { priority: "DESC" },
+    });
+
+    return highestPriorityRSVP?.priority || 0;
+  }
+
   async createRSVP(event_id: string, user_id: string): Promise<RSVP> {
     try {
       const user = await this.userRepo.findOneBy({ user_id });
@@ -60,7 +69,8 @@ export class RSVPService {
         attendeeCount >= event.max_attendees
           ? rsvpStatuses[1] // "waitlisted"
           : rsvpStatuses[0]; // "going"
-      const priority = attendeeCount + 1;
+      const highestPriority = await this.getHighestPriority(event_id);
+      const priority = highestPriority + 1;
 
       const rsvp = this.rsvpRepo.create({
         event_id,
@@ -157,6 +167,24 @@ export class RSVPService {
       if (!user) {
         throw new CustomError("User not found", 404);
       }
+
+      if (status === rsvpStatuses[0]) {
+        // "going"
+        const attendeeCount = await this.rsvpRepo.countBy({
+          event_id,
+          status: rsvpStatuses[0],
+        });
+
+        if (attendeeCount >= event.max_attendees) {
+          throw new CustomError(
+            "Cannot update RSVP to 'going': Event is full",
+            400,
+          );
+        }
+      }
+
+      const highestPriority = await this.getHighestPriority(event_id);
+      rsvp.priority = highestPriority + 1;
 
       const previousStatus = rsvp.status;
       rsvp.status = status;
