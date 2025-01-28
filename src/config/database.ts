@@ -16,6 +16,7 @@ export const AppDataSource = new DataSource({
   password: config.db.password,
   database: config.db.name,
   entities: [User, Movie, Event, RSVP, Comment, ActivityLog],
+  // synchronize: config.env === "local",
   synchronize: config.env === "development",
   logging: config.env === "development",
 });

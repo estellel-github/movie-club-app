@@ -6,6 +6,7 @@ import { Movie } from "../models/movie.entity.js";
 import { Event } from "../models/event.entity.js";
 import { Comment } from "../models/comment.entity.js";
 import { rsvpStatuses, RSVP } from "../models/rsvp.entity.js";
+import type { DeepPartial } from "typeorm";
 
 const seedDatabase = async () => {
   try {
@@ -29,11 +30,11 @@ const seedDatabase = async () => {
     }
 
     const predefinedPassword = process.env.SEED_PASSWORD || "Test@123";
-    const hashedPassword = await argon2.hash(predefinedPassword);
 
     // Seed Users
     const users = [];
     for (let i = 0; i < 10; i++) {
+      const hashedPassword = await argon2.hash(predefinedPassword);
       const user = userRepo.create({
         email: faker.internet.email(),
         username: faker.internet.username(),
@@ -76,7 +77,7 @@ const seedDatabase = async () => {
           movies[faker.number.int({ min: 0, max: movies.length - 1 })].movie_id,
         host_id:
           users[faker.number.int({ min: 0, max: users.length - 1 })].user_id,
-        max_attendees: faker.number.int({ min: 10, max: 100 }),
+        max_attendees: faker.number.int({ min: 5, max: 15 }),
       });
       events.push(await eventRepo.save(event));
     }
@@ -85,19 +86,34 @@ const seedDatabase = async () => {
     // Seed RSVPs
     const rsvps = [];
     for (const event of events) {
-      const attendeeCount = faker.number.int({
-        min: 0,
-        max: event.max_attendees,
+      let currentPriority = 1;
+      const maxAttendees = event.max_attendees;
+
+      const totalRsvps = faker.number.int({
+        min: maxAttendees,
+        max: maxAttendees + 10,
       });
-      for (let i = 0; i < attendeeCount; i++) {
+
+      for (let i = 0; i < totalRsvps; i++) {
+        const user = users[faker.number.int({ min: 0, max: users.length - 1 })];
+        let status: string;
+        if (currentPriority <= maxAttendees) {
+          status = rsvpStatuses[0];
+        } else {
+          status = faker.helpers.arrayElement([
+            rsvpStatuses[1],
+            rsvpStatuses[2],
+          ]);
+        }
+
         const rsvp = rsvpRepo.create({
           event_id: event.event_id,
-          user_id:
-            users[faker.number.int({ min: 0, max: users.length - 1 })].user_id,
-          status: faker.helpers.arrayElement(rsvpStatuses),
-          priority: faker.number.int({ min: 0, max: 5 }),
-        });
+          user_id: user.user_id,
+          status: status,
+          priority: currentPriority,
+        } as DeepPartial<RSVP>);
         rsvps.push(await rsvpRepo.save(rsvp));
+        currentPriority++;
       }
     }
     console.log(`✅ ${rsvps.length} RSVPs seeded.`);
