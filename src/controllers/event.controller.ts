@@ -11,7 +11,6 @@ export const getAllEvents = async (
   next: NextFunction,
 ) => {
   try {
-    console.log("Incoming Query Parameters:", req.query);
     const {
       page = "1",
       limit = "0",
