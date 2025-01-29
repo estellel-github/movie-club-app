@@ -1,6 +1,7 @@
 import type { Repository } from "typeorm";
 import { AppDataSource } from "../config/database.js";
-import { User } from "../models/user.entity.js";
+import type { UserRole } from "../models/user.entity.js";
+import { User, userRoles } from "../models/user.entity.js";
 import { excludeFields } from "../utils/excludeFields.js";
 import { CustomError } from "../utils/customError.js";
 import argon2 from "argon2";
@@ -78,7 +79,12 @@ export class UserService {
       if (!user) {
         throw new CustomError("User not found", 404);
       }
-      return excludeFields(user, ["password"]);
+      return excludeFields(user, [
+        "email",
+        "password",
+        "reset_token",
+        "reset_token_expires",
+      ]);
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -100,17 +106,52 @@ export class UserService {
         throw new CustomError(
           "Unauthorized to update this user's profile",
           403,
-        ); // Forbidden
+        );
       }
 
       const user = await this.getUserById(user_id);
       if (!user) {
-        throw new CustomError("User not found", 404); // Not Found
+        throw new CustomError("User not found", 404);
       }
 
-      Object.assign(user, data);
+      // Restrict updatable fields
+      const allowedFields: (keyof User)[] = ["email", "username", "intro_msg"];
+
+      // Detect restricted fields in the incoming data
+      const restrictedFields = Object.keys(data).filter(
+        (key) => !allowedFields.includes(key as keyof User),
+      );
+
+      if (restrictedFields.length > 0) {
+        throw new CustomError(
+          `Updating the following fields is not allowed: ${restrictedFields.join(", ")}`,
+          400,
+        );
+      }
+
+      // Filter data to include only allowed fields
+      const filteredData: Partial<User> = Object.keys(data)
+        .filter((key): key is keyof User =>
+          allowedFields.includes(key as keyof User),
+        )
+        .reduce((obj, key) => {
+          const value = data[key];
+          if (value !== undefined) {
+            obj[key] = value;
+          }
+          return obj;
+        }, {} as Partial<User>);
+
+      Object.assign(user, filteredData);
+
       const updatedUser = await this.userRepo.save(user);
-      return excludeFields(updatedUser, ["password"]);
+      return excludeFields(updatedUser, [
+        "email",
+        "password",
+        "reset_token",
+        "reset_token_expires",
+        "status",
+      ]);
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -201,5 +242,73 @@ export class UserService {
     user.reset_token_expires = null;
 
     await this.userRepo.save(user);
+  }
+
+  async suspendUser(
+    user_role: UserRole,
+    target_user_id: string,
+  ): Promise<Partial<User>> {
+    try {
+      if (user_role !== "admin") {
+        throw new CustomError("Only admins can suspend users", 403);
+      }
+
+      const user = await this.getUserById(target_user_id);
+      if (!user) {
+        throw new CustomError("User not found", 404);
+      }
+
+      if (user.status === userStatuses[1]) {
+        throw new CustomError("User is already suspended", 400);
+      }
+
+      user.status = userStatuses[1];
+      const updatedUser = await this.userRepo.save(user);
+      return excludeFields(updatedUser, [
+        "password",
+        "reset_token",
+        "reset_token_expires",
+      ]);
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new CustomError("Failed to suspend user", 500);
+    }
+  }
+
+  async updateUserRole(
+    user_role: string,
+    target_user_id: string,
+    newRole: UserRole,
+  ): Promise<Partial<User>> {
+    try {
+      if (user_role !== "admin") {
+        throw new CustomError("Only admins can update user roles", 403);
+      }
+
+      const user = await this.getUserById(target_user_id);
+      if (!user) {
+        throw new CustomError("User not found", 404);
+      }
+
+      const validRoles = userRoles;
+      if (!validRoles.includes(newRole)) {
+        throw new CustomError("Invalid role specified", 400);
+      }
+
+      user.role = newRole;
+      const updatedUser = await this.userRepo.save(user);
+      return excludeFields(updatedUser, [
+        "password",
+        "reset_token",
+        "reset_token_expires",
+      ]);
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new CustomError("Failed to update user role", 500);
+    }
   }
 }
