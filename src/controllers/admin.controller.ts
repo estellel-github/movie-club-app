@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { UserService } from "../services/user.service.js";
-import { userRoles, userStatuses } from "../models/user.entity.js";
+import { userRoles } from "../models/user.entity.js";
 import { CustomError } from "../utils/customError.js";
 
 const userService = new UserService();
@@ -13,28 +13,16 @@ export const suspendUser = async (
 ) => {
   try {
     const { target_user_id: targetUserId } = req.params;
-    const { user_id: requestingUserId, role: requestingUserRole } = req.user!;
+    const { role: requestingUserRole } = req.user!;
 
-    const target_user = await userService.getUserById(targetUserId);
-
-    if (!target_user) {
-      throw new CustomError("User not found", 404);
-    }
-
-    if (target_user.status === userStatuses[1]) {
-      throw new CustomError("User already suspended", 400);
-    }
-
-    const updatedUser = await userService.updateUser(
-      targetUserId,
-      { status: "suspended" },
-      requestingUserId,
+    const updatedUser = await userService.suspendUser(
       requestingUserRole,
+      targetUserId,
     );
 
     res.status(200).json({
       message: "User suspended successfully",
-      userId: updatedUser.user_id,
+      userId: updatedUser,
     });
   } catch (error) {
     next(
@@ -54,7 +42,7 @@ export const updateUserRole = async (
   try {
     const { target_user_id: targetUserId } = req.params;
     const { role } = req.body;
-    const { user_id: requestingUserId, role: requesterRole } = req.user!;
+    const { role: requesterRole } = req.user!;
 
     // Validate role
     if (!userRoles.includes(role)) {
@@ -67,11 +55,10 @@ export const updateUserRole = async (
       throw new CustomError("User not found", 404);
     }
 
-    const updatedUser = await userService.updateUser(
+    const updatedUser = await userService.updateUserRole(
+      requesterRole,
       targetUserId,
       role,
-      requestingUserId,
-      requesterRole,
     );
 
     res.status(200).json({
