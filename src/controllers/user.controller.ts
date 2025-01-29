@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { UserService } from "../services/user.service.js";
 import { CustomError } from "../utils/customError.js";
 import { excludeFields } from "../utils/excludeFields.js";
+import { userRoles } from "../models/user.entity.js";
 
 const userService = new UserService();
 
@@ -15,7 +16,7 @@ export const getUserProfile = async (
     const { user_id: requestingUserId, role } = req.user!;
 
     if (!targetUserId) {
-      throw new CustomError("Target user ID not provided", 400); // Bad Request
+      throw new CustomError("Target user ID not provided", 400);
     }
 
     const targetUser = await userService.getUserById(targetUserId);
@@ -26,7 +27,7 @@ export const getUserProfile = async (
 
     // Check if the profile is public or private
     let userProfile;
-    if (targetUserId === requestingUserId || role === "admin") {
+    if (targetUserId === requestingUserId || role === userRoles[2]) {
       // If the user is viewing their own profile or an admin is viewing,
       // return the full profile (including email)
       userProfile = targetUser;
@@ -56,7 +57,7 @@ export const updateUserProfile = async (
     const data = req.body;
 
     if (!targetUserId) {
-      throw new CustomError("Target user ID not provided", 400); // Bad Request
+      throw new CustomError("Target user ID not provided", 400);
     }
 
     const updatedUser = await userService.updateUser(
@@ -86,15 +87,15 @@ export const deleteUserAccount = async (
 ) => {
   try {
     const { user_id: requestingUserId, role } = req.user!;
-    const { user_id: targetUserId } = req.params;
+    const { target_user_id: targetUserId } = req.params;
 
     if (!targetUserId) {
-      throw new CustomError("Target user ID not provided", 400); // Bad Request
+      throw new CustomError("Target user ID not provided", 400);
     }
 
     await userService.deleteUser(targetUserId, requestingUserId, role);
 
-    res.status(204).send(); // No content, successfully deleted
+    res.status(204).send();
   } catch (error) {
     next(
       error instanceof CustomError
