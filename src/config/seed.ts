@@ -96,6 +96,17 @@ const seedDatabase = async () => {
 
       for (let i = 0; i < totalRsvps; i++) {
         const user = users[faker.number.int({ min: 0, max: users.length - 1 })];
+
+        // Check if an RSVP already exists for this user and event
+        const existingRsvp = await rsvpRepo.findOneBy({
+          event_id: event.event_id,
+          user_id: user.user_id,
+        });
+
+        if (existingRsvp) {
+          continue; // Skip this user for this event if an RSVP already exists
+        }
+
         let status: string;
         if (currentPriority <= maxAttendees) {
           status = rsvpStatuses[0];
