@@ -13,8 +13,10 @@ export const updateUserProfileSchema = z.object({
     .regex(
       /^[\p{L}\p{N}_&]+$/u,
       "Username can only contain letters, numbers, underscores, and '&'",
-    ),
+    )
+    .optional(),
   intro_msg: z
     .string()
-    .max(255, "Intro message must not exceed 255 characters"),
+    .max(255, "Intro message must not exceed 255 characters")
+    .optional(),
 });
