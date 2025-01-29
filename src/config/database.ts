@@ -24,7 +24,7 @@ export const AppDataSource = new DataSource({
 export const connectDB = async () => {
   let retries = 5;
   console.log("🔧 Attempting database connection...");
-  while (retries) {
+  while (retries > 0) {
     try {
       await AppDataSource.initialize();
       console.log(`✅ Database connected: ${config.db.name}`);
@@ -33,11 +33,10 @@ export const connectDB = async () => {
       console.error(`❌ Database connection failed: ${error}`);
       retries -= 1;
       console.log(`⏳ Retrying... (${retries} retries left)`);
-      retries -= 1;
       await new Promise((res) => setTimeout(res, 5000));
     }
   }
-  if (!retries) {
+  if (retries <= 0) {
     console.error("❌ Database connection failed after all retries.");
     process.exit(1);
   }
