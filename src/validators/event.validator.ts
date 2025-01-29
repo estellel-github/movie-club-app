@@ -16,6 +16,8 @@ export const baseEventSchema = z.object({
     .string()
     .min(3, "Location must be at least 3 characters long")
     .max(255, "Location must not exceed 255 characters"),
+  movie_id: z.string().uuid("Invalid movie ID format"),
+  host_id: z.string().uuid("Invalid host ID format").optional(),
   max_attendees: z
     .number()
     .min(1, "Max attendees must be at least 1")
