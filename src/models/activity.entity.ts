@@ -11,9 +11,9 @@ export const activityTypes = [
 export type ActivityType = (typeof activityTypes)[number];
 
 @Entity()
-@Index("idx_activity_type", ["type"]) // Index on type
-@Index("idx_activity_user", ["user_id"]) // Index on user_id
-@Index("idx_activity_created_at", ["created_at"]) // Index on created_at
+@Index("idx_activity_type", ["type"])
+@Index("idx_activity_user", ["user_id"])
+@Index("idx_activity_created_at", ["created_at"])
 export class ActivityLog {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
@@ -25,14 +25,13 @@ export class ActivityLog {
   type!: ActivityType;
 
   @Column("text")
-  details!: string; // e.g., "User 'John Doe' has joined the club."
+  details!: string;
+  @Column("uuid", { nullable: true })
+  user_id!: string | null;
 
   @Column("uuid", { nullable: true })
-  user_id!: string | null; // Reference to the user, nullable because not all activities involve users
-
-  @Column("uuid", { nullable: true })
-  event_id!: string | null; // Reference to the event, nullable for activities not tied to events
+  event_id!: string | null;
 
   @Column("timestamp")
-  created_at!: Date; // Timestamp of when the activity occurred
+  created_at!: Date;
 }

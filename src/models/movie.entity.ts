@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm";
 
 @Entity()
+@Index(["title", "release_year"], { unique: true })
 export class Movie {
   @PrimaryGeneratedColumn("uuid")
   movie_id!: string;

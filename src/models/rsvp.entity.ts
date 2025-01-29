@@ -1,9 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm";
 
 export const rsvpStatuses = ["going", "waitlisted", "not going"] as const;
 export type RSVPStatus = (typeof rsvpStatuses)[number];
 
 @Entity()
+@Index(["event_id", "user_id"], { unique: true })
 export class RSVP {
   @PrimaryGeneratedColumn("uuid")
   rsvp_id!: string;
