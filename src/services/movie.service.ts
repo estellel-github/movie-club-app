@@ -102,6 +102,18 @@ export class MovieService {
 
   async createMovie(data: Partial<Movie>, user_id: string): Promise<Movie> {
     try {
+      const existingMovie = await this.movieRepo.findOneBy({
+        title: data.title,
+        release_year: data.release_year,
+      });
+
+      if (existingMovie) {
+        throw new CustomError(
+          `A movie with the title '${data.title}' and release year '${data.release_year}' already exists.`,
+          400,
+        );
+      }
+
       const movie = this.movieRepo.create({
         ...data,
         added_by_user_id: user_id,
