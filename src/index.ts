@@ -33,7 +33,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/feed", feedRoutes);
 app.use("/api/health", healthRoutes);
 app.use("/api/movies", movieRoutes);
-app.use("/api/profile", userRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/rsvps", rsvpRoutes);
 
 // Error Handling
