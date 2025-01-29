@@ -15,6 +15,7 @@ import movieRoutes from "./routes/movie.route.js";
 import rsvpRoutes from "./routes/rsvp.route.js";
 import userRoutes from "./routes/user.route.js";
 import { validateJsonBody } from "./middleware/validateJsonBody.js";
+import { notImplementedHandler } from "./middleware/notImplemented.middleware.js";
 
 dotenv.config();
 
@@ -35,6 +36,9 @@ app.use("/api/health", healthRoutes);
 app.use("/api/movies", movieRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/rsvps", rsvpRoutes);
+
+// Catch-all for unhandled routes and methods
+app.use(notImplementedHandler);
 
 // Error Handling
 app.use(validateJsonBody);
