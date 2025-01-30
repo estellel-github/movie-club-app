@@ -40,3 +40,7 @@ export const updatePasswordSchema = z.object({
     .regex(/^[a-f0-9]{64}$/i, "Invalid token format"),
   new_password: strongPassword,
 });
+
+export const resetTokenSchema = z.object({
+  email: email,
+});
