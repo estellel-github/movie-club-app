@@ -18,7 +18,7 @@ import { authorizeRole } from "../middleware/permissions.middleware.js";
 
 const router = Router();
 
-router.get("/", validate(movieFilterSchema), getAllMovies);
+router.get("/", validate(undefined, movieFilterSchema), getAllMovies);
 router.get("/:id", validate(undefined, movieReqSchema), getMovieById);
 
 router.post(

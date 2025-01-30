@@ -5,6 +5,11 @@ import { validate } from "../middleware/validation.middleware.js";
 import { activityFeedSchema } from "../validators/feed.validator.js";
 const router = Router();
 
-router.get("/", authenticate, validate(activityFeedSchema), getActivityFeed);
+router.get(
+  "/",
+  authenticate,
+  validate(undefined, activityFeedSchema),
+  getActivityFeed,
+);
 
 export default router;

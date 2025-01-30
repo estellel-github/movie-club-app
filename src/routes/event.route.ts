@@ -20,12 +20,21 @@ import { authorizeRole } from "../middleware/permissions.middleware.js";
 const router = Router();
 
 // Public route (without sensitive fields)
-router.get("/public", validate(eventFilterSchema), getAllPublicEvents);
+router.get(
+  "/public",
+  validate(undefined, eventFilterSchema),
+  getAllPublicEvents,
+);
 
 // Private route (with all details)
-router.get("/", authenticate, validate(eventFilterSchema), getAllEvents);
+router.get(
+  "/",
+  authenticate,
+  validate(undefined, eventFilterSchema),
+  getAllEvents,
+);
 
-router.get("/:id", getEventById);
+router.get("/:id", validate(undefined, eventReqSchema), getEventById);
 
 router.post(
   "/",
